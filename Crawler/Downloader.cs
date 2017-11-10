@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Crawler
 {
     /// <summary>
-    ///     Http连接操作帮助类
+    ///     下载器。
     /// </summary>
     public class Downloader
     {

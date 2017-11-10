@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crawler.Logger
+namespace Crawler.Simple
 {
-    public interface ILogger
+    class Program
     {
-        void Write(string message);
+        static void Main(string[] args)
+        {
+        }
     }
 }

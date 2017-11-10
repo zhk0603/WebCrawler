@@ -4,10 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crawler.Logger
+namespace Crawler
 {
-    public interface ILogger
+    public enum CrawlerState
     {
-        void Write(string message);
+        Init,
+        Running,
+        Stopped,
+        Finished,
+        Exited
     }
 }

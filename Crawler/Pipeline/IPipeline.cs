@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crawler.Logger
+namespace Crawler.Pipeline
 {
-    public interface ILogger
+    public interface IPipeline
     {
-        void Write(string message);
+        void Execute();
     }
 }
