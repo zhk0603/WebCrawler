@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace Crawler.Scheduler
 {
-    public class DefaultScheduler : IScheduler
+    public class SiteScheduler : IScheduler
     {
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly List<Site> _siteStack = new List<Site>();
 
-        public Site Pop()
+        object IScheduler.Pop()
+        {
+            return Pop();
+        }
+
+        public virtual Site Pop()
         {
             try
             {
@@ -31,6 +36,14 @@ namespace Crawler.Scheduler
             finally
             {
                 _lock.ExitReadLock();
+            }
+        }
+
+        void IScheduler.Push(object @object)
+        {
+            if (@object is Site requestSite)
+            {
+                Push(requestSite);
             }
         }
 

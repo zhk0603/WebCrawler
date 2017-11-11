@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Crawler.Logger;
-using Crawler.Pipeline;
+using Crawler.Pipelines;
 using Crawler.Scheduler;
 
 namespace Crawler
@@ -19,12 +19,10 @@ namespace Crawler
         private IEnumerable<Site> _sites;
         private DateTime _beginTime;
         private DateTime _endTime;
-        private long _runTime;
-        private readonly object _runTimeLock = new object();
 
         public Crawler()
         {
-            _scheduler = new DefaultScheduler();
+            _scheduler = new SiteScheduler();
             Logger = new SimpleLogger();
         }
 
@@ -122,16 +120,20 @@ namespace Crawler
                 {
                     while (CrawlerState == CrawlerState.Running)
                     {
-                        var site = _scheduler.Pop();
-                        if (site == null)
-                        {
-                            CrawlerState = CrawlerState.Finished;
-                            break;
-                            //Thread.Sleep(200);
-                            //continue;
-                        }
+                        Page page = null;
 
-                        var page = new Downloader().GetPage(site);
+                        if (_scheduler is SiteScheduler)
+                        {
+                            var site = (Site)_scheduler.Pop();
+                            if (site == null)
+                            {
+                                CrawlerState = CrawlerState.Finished;
+                                break;
+                            }
+
+                            page = new Downloader().GetPage(site);
+                        }
+                        
 
                         var context = new PipelineContext()
                         {
@@ -151,7 +153,7 @@ namespace Crawler
             }
 
             _endTime = DateTime.Now;
-            Console.WriteLine("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds);
+            Logger.Write("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds, null, LogLevel.Info);
         }
 
         public Task RunAsync()

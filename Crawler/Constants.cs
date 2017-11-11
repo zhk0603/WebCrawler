@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Crawler.Logger
+namespace Crawler
 {
-    public interface ILogger
+    internal static class Constants
     {
-        void Write(string message, Exception exception, LogLevel logLevel);
+        internal const string CrawlerVersionKey = "webCrawler:version";
     }
 }

@@ -1,14 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Crawler.Logger;
 using Crawler.Scheduler;
 
-namespace Crawler.Pipeline
+namespace Crawler.Pipelines
 {
     public class CrawlerPipeline : IPipeline
     {
+        private readonly ILogger _logger;
+
+        public CrawlerPipeline()
+        {
+            //_logger
+        }
+      
         void IPipeline.Initialize()
         {
             BaseInitialize();
@@ -24,28 +29,21 @@ namespace Crawler.Pipeline
         {
             BaseInitialize();
 
-            await BeforeExceute(context);
-
-            if (await ExecuteAsync())
+            if (await ExecuteAsync(context))
             {
                 if (Next != null) await Next?.ExecuteAsync(context);
             }
 
             await AfterExceute(context);
         }
-
-
-        public virtual Task BeforeExceute(PipelineContext context)
-        {
-            return Task.FromResult<object>(null);
-        }
+        
 
         public virtual Task AfterExceute(PipelineContext context)
         {
             return Task.FromResult<object>(null);
         }
 
-        protected virtual Task<bool> ExecuteAsync()
+        protected virtual Task<bool> ExecuteAsync(PipelineContext context)
         {
             return Task.FromResult(true);
         }
@@ -69,7 +67,7 @@ namespace Crawler.Pipeline
             }
             if (options.Scheduler == null)
             {
-                options.Scheduler = new DefaultScheduler();
+                options.Scheduler = new SiteScheduler();
             }
 
             Options = options;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Crawler;
-using Crawler.Pipeline;
+using Crawler.Pipelines;
 
 namespace Crawler.Simple
 {
@@ -25,14 +25,13 @@ namespace Crawler.Simple
 
             builder
                 .AddSiteRange(sites)
-                //.UsePipeline(typeof(Pipeline1),new PipelineOptions())
-                //.UsePipeline<Pipeline2>(new PipelineOptions())
-                //.UsePipeline<Pipeline3>()
-                .UseMultiThread(4)
+                .UsePipeline(typeof(Pipeline1), new PipelineOptions())
+                .UsePipeline<Pipeline2>(new PipelineOptions())
+                .UsePipeline<Pipeline3>()
+                .UseMultiThread(5)
                 .UseNamed("Simple Crawler");
 
             var crawler = builder.Builder();
-
             crawler.Run();
 
             Console.ReadKey();
@@ -41,34 +40,33 @@ namespace Crawler.Simple
 
     class Pipeline1 : CrawlerPipeline<PipelineOptions>
     {
+        public Pipeline1(PipelineOptions options) : base(options)
+        {
+        }
 
         protected override void BaseInitialize()
         {
-            
+            Console.WriteLine("处理管道1-开始");
         }
 
-        public override Task BeforeExceute(PipelineContext context)
+        protected override Task<bool> ExecuteAsync(PipelineContext context)
         {
-            Console.WriteLine("处理管道1-开始");
-
             var node = context.Page.HtmlNode;
-
-            var titleColl = node.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
-            foreach (var title in titleColl)
+            if (node != null)
             {
-                Console.WriteLine("标题：" + title.InnerText);
+                var titleColl = node.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
+                foreach (var title in titleColl)
+                {
+                    Console.WriteLine("标题：" + title.InnerText);
+                }
             }
-            return Task.FromResult(0);
+            return Task.FromResult(true);
         }
 
         public override Task AfterExceute(PipelineContext context)
         {
             Console.WriteLine("处理管道1-结束");
             return Task.FromResult(0);
-        }
-
-        public Pipeline1(PipelineOptions options) : base(options)
-        {
         }
     }
 
@@ -80,12 +78,13 @@ namespace Crawler.Simple
 
         protected override void BaseInitialize()
         {
+            Console.WriteLine("\t处理管道2-开始");
         }
 
-        public override Task BeforeExceute(PipelineContext context)
+        protected override Task<bool> ExecuteAsync(PipelineContext context)
         {
-            Console.WriteLine("\t处理管道2-开始");
-            return Task.FromResult(0);
+            // 返回 false 将不执行 管道3
+            return Task.FromResult(false);
         }
 
         public override Task AfterExceute(PipelineContext context)

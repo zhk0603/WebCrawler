@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Crawler.Pipeline;
+using Crawler.Pipelines;
 
 namespace Crawler
 {
@@ -14,13 +14,20 @@ namespace Crawler
         private readonly IList<Site> _sites;
         private string _named;
         private int _threadNum = 1;
+        private readonly Dictionary<string, object> _properties;
 
         public CrawlerBuilder()
         {
-            _pipelines = new List<IPipeline>();
             _sites = new List<Site>();
+            _pipelines = new List<IPipeline>();
             _pipelineTuples = new List<Tuple<Delegate, object[]>>();
+            _properties = new Dictionary<string, object>();
+
+            _properties[Constants.CrawlerVersionKey] = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
         }
+
+        public Dictionary<string, Object> Properties => _properties;
 
         public CrawlerBuilder AddSite(Site site)
         {
@@ -100,6 +107,12 @@ namespace Crawler
         public CrawlerBuilder UseNamed(string named)
         {
             _named = named;
+            return this;
+        }
+
+        public CrawlerBuilder UseLogger(Type loggerType)
+        {
+
             return this;
         }
 

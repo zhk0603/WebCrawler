@@ -8,7 +8,7 @@ namespace Crawler.Logger
 {
     public class SimpleLogger : ILogger
     {
-        public void Write(string message)
+        public void Write(string message, Exception exception, LogLevel logLevel)
         {
             System.Console.WriteLine(message);
         }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Crawler.Scheduler;
+﻿using Crawler.Scheduler;
 
-namespace Crawler.Pipeline
+namespace Crawler.Pipelines
 {
     public class PipelineOptions
     {
