@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Crawler.Pipelines
 {
@@ -13,7 +9,6 @@ namespace Crawler.Pipelines
         protected FileDownloadPipeline(FileDownloadOptions options) : base(options)
         {
             if (!string.IsNullOrWhiteSpace(options.DownloadDirectory))
-            {
                 if (options.DownloadDirectory.StartsWith("~/"))
                 {
                     //TODO
@@ -22,7 +17,6 @@ namespace Crawler.Pipelines
                 {
                     _path = options.DownloadDirectory;
                 }
-            }
         }
 
         protected override async Task<bool> ExecuteAsync(PipelineContext context)

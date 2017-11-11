@@ -4,9 +4,9 @@ namespace Crawler.Pipelines
 {
     public interface IPipeline
     {
-        void Initialize();
         bool IsComplete { get; set; }
-        Task ExecuteAsync(PipelineContext context);
         IPipeline Next { get; set; }
+        void Initialize();
+        Task ExecuteAsync(PipelineContext context);
     }
 }

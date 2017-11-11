@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Crawler.Scheduler
 {
@@ -18,6 +14,12 @@ namespace Crawler.Scheduler
             return Pop();
         }
 
+        void IScheduler.Push(object @object)
+        {
+            if (@object is Site requestSite)
+                Push(requestSite);
+        }
+
         public virtual Site Pop()
         {
             try
@@ -25,9 +27,7 @@ namespace Crawler.Scheduler
                 _lock.EnterReadLock();
 
                 if (_siteStack.Count == 0)
-                {
                     return null;
-                }
 
                 var site = _siteStack.FirstOrDefault();
                 _siteStack.RemoveAt(0);
@@ -39,15 +39,7 @@ namespace Crawler.Scheduler
             }
         }
 
-        void IScheduler.Push(object @object)
-        {
-            if (@object is Site requestSite)
-            {
-                Push(requestSite);
-            }
-        }
-
-        public void Push(Site requestSite)
+        public virtual void Push(Site requestSite)
         {
             try
             {

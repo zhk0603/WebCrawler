@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace Crawler
 {
@@ -19,6 +17,36 @@ namespace Crawler
     /// </summary>
     public class Downloader
     {
+        #region 公共方法
+
+        /// <summary>
+        ///     设置代理
+        /// </summary>
+        /// <param name="ip"></param>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        public void SetProxy(string ip, string userName = null, string password = null)
+        {
+            //设置代理服务器
+            if (ip.Contains(":"))
+            {
+                var plist = ip.Split(':');
+                _webProxy = new WebProxy(plist[0].Trim(), Convert.ToInt32(plist[1].Trim()));
+                //建议连接
+                if (!string.IsNullOrEmpty(userName))
+                    _webProxy.Credentials = new NetworkCredential(userName, password);
+            }
+            else
+            {
+                _webProxy = new WebProxy(ip, false);
+                //建议连接
+                if (!string.IsNullOrEmpty(userName))
+                    _webProxy.Credentials = new NetworkCredential(userName, password);
+            }
+        }
+
+        #endregion
+
         #region 预定义方法或者变更
 
         //默认的编码
@@ -68,43 +96,27 @@ namespace Crawler
                 using (_response = (HttpWebResponse) _request.GetResponse())
                 {
                     page.Uri = _response.ResponseUri;
-                    page.HttpStatusCode = (int)_response.StatusCode;
+                    page.HttpStatusCode = (int) _response.StatusCode;
                     page.StatusDescription = _response.StatusDescription;
                     page.Header = _response.Headers;
                     if (_response.Cookies != null)
-                    {
                         page.CookieCollection = _response.Cookies;
-                    }
                     if (_response.Headers["set-cookie"] != null)
-                    {
                         page.Cookie = _response.Headers["set-cookie"];
-                    }
                     var _stream = new MemoryStream();
                     //GZIIP处理
                     if (_response.ContentEncoding != null &&
                         _response.ContentEncoding.Equals("gzip", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        //开始读取流并设置编码方式
-                        //new GZipStream(_response.GetResponseStream(), CompressionMode.Decompress).CopyTo(_stream, 10240);
-                        //.net4.0以下写法
                         _stream =
                             GetMemoryStream(new GZipStream(_response.GetResponseStream(), CompressionMode.Decompress));
-                    }
                     else
-                    {
-                        //开始读取流并设置编码方式
-                        //_response.GetResponseStream().CopyTo(_stream, 10240);
-                        //.net4.0以下写法
                         _stream = GetMemoryStream(_response.GetResponseStream());
-                    }
                     //获取Byte
                     var RawResponse = _stream.ToArray();
                     _stream.Close();
                     //是否返回Byte类型数据
                     if (requestSite.ResultType == ResultType.Byte)
-                    {
                         page.ResultByte = RawResponse;
-                    }
                     //从这里开始我们要无视编码了
                     if (_encoding == null)
                     {
@@ -124,19 +136,15 @@ namespace Crawler
                         else
                         {
                             if (string.IsNullOrEmpty(_response.CharacterSet))
-                            {
                                 _encoding = Encoding.UTF8;
-                            }
                             else
-                            {
                                 _encoding = Encoding.GetEncoding(_response.CharacterSet);
-                            }
                         }
                     }
                     //得到返回的HTML
                     page.HtmlSource = _encoding.GetString(RawResponse);
 
-                    var doc = new HtmlAgilityPack.HtmlDocument();
+                    var doc = new HtmlDocument();
                     doc.LoadHtml(page.HtmlSource);
                     page.HtmlNode = doc.DocumentNode;
                 }
@@ -151,7 +159,7 @@ namespace Crawler
                 if (_response != null)
                 {
                     page.Uri = _response.ResponseUri;
-                    page.HttpStatusCode = (int)_response.StatusCode;
+                    page.HttpStatusCode = (int) _response.StatusCode;
                     page.StatusDescription = _response.StatusDescription;
                 }
             }
@@ -160,9 +168,7 @@ namespace Crawler
                 page.HtmlSource = ex.Message;
             }
             if (requestSite.IsToLower)
-            {
                 page.HtmlSource = page.HtmlSource.ToLower();
-            }
 
             return page;
         }
@@ -197,18 +203,12 @@ namespace Crawler
             SetCer(requestSite);
             //设置Header参数
             if (requestSite.Header != null && requestSite.Header.Count > 0)
-            {
                 foreach (var item in requestSite.Header.AllKeys)
-                {
                     _request.Headers.Add(item, requestSite.Header[item]);
-                }
-            }
             // 设置代理
             SetProxy(requestSite);
             if (requestSite.ProtocolVersion != null)
-            {
                 _request.ProtocolVersion = requestSite.ProtocolVersion;
-            }
             _request.ServicePoint.Expect100Continue = requestSite.Expect100Continue;
             //请求方式Get或者Post
             _request.Method = requestSite.Method;
@@ -232,9 +232,7 @@ namespace Crawler
             SetPostData(requestSite);
             //设置最大连接
             if (requestSite.Connectionlimit > 0)
-            {
                 _request.ServicePoint.ConnectionLimit = requestSite.Connectionlimit;
-            }
             //设置host
             SetHost(requestSite);
         }
@@ -271,12 +269,8 @@ namespace Crawler
         private void SetCerList(Site requestSite)
         {
             if (requestSite.ClentCertificates != null && requestSite.ClentCertificates.Count > 0)
-            {
                 foreach (var item in requestSite.ClentCertificates)
-                {
                     _request.ClientCertificates.Add(item);
-                }
-            }
         }
 
         /// <summary>
@@ -287,9 +281,7 @@ namespace Crawler
         {
             if (!string.IsNullOrEmpty(requestSite.Cookie))
                 //Cookie
-            {
                 _request.Headers[HttpRequestHeader.Cookie] = requestSite.Cookie;
-            }
             //设置Cookie
             if (requestSite.CookieCollection != null)
             {
@@ -308,9 +300,7 @@ namespace Crawler
             if (_request.Method.Trim().ToLower().Contains("post"))
             {
                 if (requestSite.PostEncoding != null)
-                {
                     _postencoding = requestSite.PostEncoding;
-                }
                 byte[] buffer = null;
                 //写入Byte类型
                 if (requestSite.PostDataType == PostDataType.Byte && requestSite.PostdataByte != null &&
@@ -389,9 +379,7 @@ namespace Crawler
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 var collection = property?.GetValue(_request.Headers, null) as NameValueCollection;
                 if (collection != null)
-                {
                     collection["Host"] = requestSite.Host;
-                }
             }
         }
 
@@ -407,40 +395,6 @@ namespace Crawler
             SslPolicyErrors errors)
         {
             return true;
-        }
-
-        #endregion
-
-        #region 公共方法
-
-        /// <summary>
-        ///     设置代理
-        /// </summary>
-        /// <param name="ip"></param>
-        /// <param name="userName"></param>
-        /// <param name="password"></param>
-        public void SetProxy(string ip, string userName = null, string password = null)
-        {
-            //设置代理服务器
-            if (ip.Contains(":"))
-            {
-                var plist = ip.Split(':');
-                _webProxy = new WebProxy(plist[0].Trim(), Convert.ToInt32(plist[1].Trim()));
-                //建议连接
-                if (!string.IsNullOrEmpty(userName))
-                {
-                    _webProxy.Credentials = new NetworkCredential(userName, password);
-                }
-            }
-            else
-            {
-                _webProxy = new WebProxy(ip, false);
-                //建议连接
-                if (!string.IsNullOrEmpty(userName))
-                {
-                    _webProxy.Credentials = new NetworkCredential(userName, password);
-                }
-            }
         }
 
         #endregion

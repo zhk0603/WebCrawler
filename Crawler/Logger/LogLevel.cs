@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Crawler.Logger
+﻿namespace Crawler.Logger
 {
     public enum LogLevel
     {
@@ -26,6 +20,6 @@ namespace Crawler.Logger
         /// <summary>
         ///     表示错误的日志级别
         /// </summary>
-        Error = 4,
+        Error = 4
     }
 }

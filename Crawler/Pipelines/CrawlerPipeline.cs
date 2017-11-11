@@ -9,18 +9,9 @@ namespace Crawler.Pipelines
     {
         private readonly ILogger _logger;
 
-        public CrawlerPipeline()
-        {
-            //_logger
-        }
-      
         void IPipeline.Initialize()
         {
             BaseInitialize();
-        }
-
-        protected virtual void BaseInitialize()
-        {
         }
 
         public virtual bool IsComplete { get; set; }
@@ -30,13 +21,17 @@ namespace Crawler.Pipelines
             BaseInitialize();
 
             if (await ExecuteAsync(context))
-            {
                 if (Next != null) await Next?.ExecuteAsync(context);
-            }
 
             await AfterExceute(context);
         }
-        
+
+        public IPipeline Next { get; set; }
+
+        protected virtual void BaseInitialize()
+        {
+        }
+
 
         public virtual Task AfterExceute(PipelineContext context)
         {
@@ -47,8 +42,6 @@ namespace Crawler.Pipelines
         {
             return Task.FromResult(true);
         }
-
-        public IPipeline Next { get; set; }
     }
 
     public class CrawlerPipeline<TOptions> : CrawlerPipeline
@@ -57,21 +50,16 @@ namespace Crawler.Pipelines
         protected CrawlerPipeline(TOptions options)
         {
             if (options == null)
-            {
                 throw new ArgumentNullException(nameof(options));
-            }
 
             if (string.IsNullOrEmpty(options.Name))
-            {
                 options.Name = GetType().Name;
-            }
             if (options.Scheduler == null)
-            {
                 options.Scheduler = new SiteScheduler();
-            }
 
             Options = options;
         }
+
         public TOptions Options { get; set; }
     }
 }

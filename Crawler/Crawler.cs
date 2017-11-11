@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Crawler.Logger;
@@ -14,11 +11,11 @@ namespace Crawler
     public class Crawler : ICrawler
     {
         private readonly IScheduler _scheduler;
-        private int _threadNum;
-        private IPipeline _pipelin;
-        private IEnumerable<Site> _sites;
+        private readonly IEnumerable<Site> _sites;
         private DateTime _beginTime;
         private DateTime _endTime;
+        private IPipeline _pipelin;
+        private int _threadNum;
 
         public Crawler()
         {
@@ -33,9 +30,9 @@ namespace Crawler
             _pipelin = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
         }
 
-        public Crawler(IEnumerable<Site> sites, IPipeline pipeline) : this(Guid.NewGuid().ToString("N"), sites, pipeline)
+        public Crawler(IEnumerable<Site> sites, IPipeline pipeline) : this(Guid.NewGuid().ToString("N"), sites,
+            pipeline)
         {
-
         }
 
         public string Name { get; set; }
@@ -46,14 +43,10 @@ namespace Crawler
             set
             {
                 if (CheckState(CrawlerState.Running))
-                {
                     throw new InvalidOperationException("爬虫正在运行。");
-                }
 
                 if (value < 0)
-                {
                     throw new ArgumentException("爬虫线程数量不能小于0。");
-                }
                 _threadNum = value;
             }
         }
@@ -68,9 +61,7 @@ namespace Crawler
             set
             {
                 if (CheckState(CrawlerState.Running))
-                {
                     throw new InvalidOperationException("爬虫正在运行。");
-                }
                 _pipelin = value;
             }
         }
@@ -78,17 +69,13 @@ namespace Crawler
         public void Pause()
         {
             if (CrawlerState == CrawlerState.Running)
-            {
                 CrawlerState = CrawlerState.Stopped;
-            }
         }
 
         public void Continue()
         {
             if (CrawlerState == CrawlerState.Stopped)
-            {
                 CrawlerState = CrawlerState.Running;
-            }
         }
 
         public void Exit()
@@ -98,21 +85,23 @@ namespace Crawler
 
         public void Run()
         {
-            if (this.CrawlerState == CrawlerState.Running)
-            {
+            if (CrawlerState == CrawlerState.Running)
                 return;
-            }
 
             foreach (var site in _sites)
-            {
                 _scheduler.Push(site);
-            }
 
             CrawlerState = CrawlerState.Running;
             _beginTime = DateTime.Now;
 
             while (CrawlerState == CrawlerState.Running || CrawlerState == CrawlerState.Stopped)
             {
+                if (CrawlerState == CrawlerState.Stopped)
+                {
+                    Thread.Sleep(500);
+                    continue;
+                }
+
                 Parallel.For(0, ThreadNum, new ParallelOptions
                 {
                     MaxDegreeOfParallelism = ThreadNum
@@ -124,7 +113,7 @@ namespace Crawler
 
                         if (_scheduler is SiteScheduler)
                         {
-                            var site = (Site)_scheduler.Pop();
+                            var site = (Site) _scheduler.Pop();
                             if (site == null)
                             {
                                 CrawlerState = CrawlerState.Finished;
@@ -133,9 +122,9 @@ namespace Crawler
 
                             page = new Downloader().GetPage(site);
                         }
-                        
 
-                        var context = new PipelineContext()
+
+                        var context = new PipelineContext
                         {
                             Crawler = this,
                             Page = page,
@@ -148,6 +137,8 @@ namespace Crawler
                         };
 
                         Pipeline.ExecuteAsync(context).GetAwaiter().GetResult();
+                        Logger.Write("1", null, LogLevel.Debug);
+                        Thread.Sleep(1000);
                     }
                 });
             }
@@ -163,7 +154,7 @@ namespace Crawler
 
         private bool CheckState(CrawlerState state)
         {
-            return this.CrawlerState == state;
+            return CrawlerState == state;
         }
     }
 }

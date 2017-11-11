@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using Crawler.Pipelines;
 
@@ -14,20 +15,18 @@ namespace Crawler
         private readonly IList<Site> _sites;
         private string _named;
         private int _threadNum = 1;
-        private readonly Dictionary<string, object> _properties;
 
         public CrawlerBuilder()
         {
             _sites = new List<Site>();
             _pipelines = new List<IPipeline>();
             _pipelineTuples = new List<Tuple<Delegate, object[]>>();
-            _properties = new Dictionary<string, object>();
+            Properties = new Dictionary<string, object>();
 
-            _properties[Constants.CrawlerVersionKey] = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
+            Properties[Constants.CrawlerVersionKey] = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
 
-        public Dictionary<string, Object> Properties => _properties;
+        public Dictionary<string, object> Properties { get; }
 
         public CrawlerBuilder AddSite(Site site)
         {
@@ -112,7 +111,6 @@ namespace Crawler
 
         public CrawlerBuilder UseLogger(Type loggerType)
         {
-
             return this;
         }
 
