@@ -39,27 +39,27 @@ namespace Crawler
         /// <summary>
         ///     根据相传入的数据，得到相应页面数据
         /// </summary>
-        /// <param name="objhttpitem">参数类对象</param>
+        /// <param name="requestSite">参数类对象</param>
         /// <returns>返回HttpResult类型</returns>
-        public HttpResult GetHtml(HttpItem objhttpitem)
+        public Page GetPage(Site requestSite)
         {
             //返回参数
-            var result = new HttpResult();
+            var page = new Page();
             try
             {
                 //准备参数
-                SetRequest(objhttpitem);
+                SetRequest(requestSite);
             }
             catch (Exception ex)
             {
-                result = new HttpResult
+                page = new Page
                 {
                     Cookie = "",
                     Header = null,
-                    Html = ex.Message,
+                    HtmlSource = ex.Message,
                     StatusDescription = "配置参数时出错：" + ex.Message
                 };
-                return result;
+                return page;
             }
             try
             {
@@ -67,17 +67,17 @@ namespace Crawler
 
                 using (_response = (HttpWebResponse) _request.GetResponse())
                 {
-                    result.Uri = _response.ResponseUri;
-                    result.StatusCode = _response.StatusCode;
-                    result.StatusDescription = _response.StatusDescription;
-                    result.Header = _response.Headers;
+                    page.Uri = _response.ResponseUri;
+                    page.HttpStatusCode = (int)_response.StatusCode;
+                    page.StatusDescription = _response.StatusDescription;
+                    page.Header = _response.Headers;
                     if (_response.Cookies != null)
                     {
-                        result.CookieCollection = _response.Cookies;
+                        page.CookieCollection = _response.Cookies;
                     }
                     if (_response.Headers["set-cookie"] != null)
                     {
-                        result.Cookie = _response.Headers["set-cookie"];
+                        page.Cookie = _response.Headers["set-cookie"];
                     }
                     var _stream = new MemoryStream();
                     //GZIIP处理
@@ -101,9 +101,9 @@ namespace Crawler
                     var RawResponse = _stream.ToArray();
                     _stream.Close();
                     //是否返回Byte类型数据
-                    if (objhttpitem.ResultType == ResultType.Byte)
+                    if (requestSite.ResultType == ResultType.Byte)
                     {
-                        result.ResultByte = RawResponse;
+                        page.ResultByte = RawResponse;
                     }
                     //从这里开始我们要无视编码了
                     if (_encoding == null)
@@ -134,7 +134,11 @@ namespace Crawler
                         }
                     }
                     //得到返回的HTML
-                    result.Html = _encoding.GetString(RawResponse);
+                    page.HtmlSource = _encoding.GetString(RawResponse);
+
+                    var doc = new HtmlAgilityPack.HtmlDocument();
+                    doc.LoadHtml(page.HtmlSource);
+                    page.HtmlNode = doc.DocumentNode;
                 }
 
                 #endregion
@@ -143,23 +147,24 @@ namespace Crawler
             {
                 //这里是在发生异常时返回的错误信息
                 _response = (HttpWebResponse) ex.Response;
-                result.Html = ex.Message;
+                page.HtmlSource = ex.Message;
                 if (_response != null)
                 {
-                    result.Uri = _response.ResponseUri;
-                    result.StatusCode = _response.StatusCode;
-                    result.StatusDescription = _response.StatusDescription;
+                    page.Uri = _response.ResponseUri;
+                    page.HttpStatusCode = (int)_response.StatusCode;
+                    page.StatusDescription = _response.StatusDescription;
                 }
             }
             catch (Exception ex)
             {
-                result.Html = ex.Message;
+                page.HtmlSource = ex.Message;
             }
-            if (objhttpitem.IsToLower)
+            if (requestSite.IsToLower)
             {
-                result.Html = result.Html.ToLower();
+                page.HtmlSource = page.HtmlSource.ToLower();
             }
-            return result;
+
+            return page;
         }
 
         /// <summary>
@@ -183,91 +188,91 @@ namespace Crawler
         /// <summary>
         ///     为请求准备参数
         /// </summary>
-        /// <param name="objhttpItem">参数列表</param>
-        private void SetRequest(HttpItem objhttpItem)
+        /// <param name="requestSite">参数列表</param>
+        private void SetRequest(Site requestSite)
         {
             //设置安全协议
-            ServicePointManager.SecurityProtocol = objhttpItem.SecurityProtocolType;
+            //ServicePointManager.SecurityProtocol = requestSite.SecurityProtocolType;
             // 验证证书
-            SetCer(objhttpItem);
+            SetCer(requestSite);
             //设置Header参数
-            if (objhttpItem.Header != null && objhttpItem.Header.Count > 0)
+            if (requestSite.Header != null && requestSite.Header.Count > 0)
             {
-                foreach (var item in objhttpItem.Header.AllKeys)
+                foreach (var item in requestSite.Header.AllKeys)
                 {
-                    _request.Headers.Add(item, objhttpItem.Header[item]);
+                    _request.Headers.Add(item, requestSite.Header[item]);
                 }
             }
             // 设置代理
-            SetProxy(objhttpItem);
-            if (objhttpItem.ProtocolVersion != null)
+            SetProxy(requestSite);
+            if (requestSite.ProtocolVersion != null)
             {
-                _request.ProtocolVersion = objhttpItem.ProtocolVersion;
+                _request.ProtocolVersion = requestSite.ProtocolVersion;
             }
-            _request.ServicePoint.Expect100Continue = objhttpItem.Expect100Continue;
+            _request.ServicePoint.Expect100Continue = requestSite.Expect100Continue;
             //请求方式Get或者Post
-            _request.Method = objhttpItem.Method;
-            _request.Timeout = objhttpItem.Timeout;
-            _request.ReadWriteTimeout = objhttpItem.ReadWriteTimeout;
+            _request.Method = requestSite.Method;
+            _request.Timeout = requestSite.Timeout;
+            _request.ReadWriteTimeout = requestSite.ReadWriteTimeout;
             //Accept
-            _request.Accept = objhttpItem.Accept;
+            _request.Accept = requestSite.Accept;
             //ContentType返回类型
-            _request.ContentType = objhttpItem.ContentType;
+            _request.ContentType = requestSite.ContentType;
             //UserAgent客户端的访问类型，包括浏览器版本和操作系统信息
-            _request.UserAgent = objhttpItem.UserAgent;
+            _request.UserAgent = requestSite.UserAgent;
             // 编码
-            _encoding = objhttpItem.Encoding;
+            _encoding = requestSite.Encoding;
             //设置Cookie
-            SetCookie(objhttpItem);
+            SetCookie(requestSite);
             //来源地址
-            _request.Referer = objhttpItem.Referer;
+            _request.Referer = requestSite.Referer;
             //是否执行跳转功能
-            _request.AllowAutoRedirect = objhttpItem.Allowautoredirect;
+            _request.AllowAutoRedirect = requestSite.Allowautoredirect;
             //设置Post数据
-            SetPostData(objhttpItem);
+            SetPostData(requestSite);
             //设置最大连接
-            if (objhttpItem.Connectionlimit > 0)
+            if (requestSite.Connectionlimit > 0)
             {
-                _request.ServicePoint.ConnectionLimit = objhttpItem.Connectionlimit;
+                _request.ServicePoint.ConnectionLimit = requestSite.Connectionlimit;
             }
             //设置host
-            SetHost(objhttpItem);
+            SetHost(requestSite);
         }
 
         /// <summary>
         ///     设置证书
         /// </summary>
-        /// <param name="objhttpItem"></param>
-        private void SetCer(HttpItem objhttpItem)
+        /// <param name="requestSite"></param>
+        private void SetCer(Site requestSite)
         {
             //这一句一定要写在创建连接的前面。使用回调的方法进行证书验证。
             ServicePointManager.ServerCertificateValidationCallback = CheckValidationResult;
 
-            if (!string.IsNullOrEmpty(objhttpItem.CerPath))
+            if (!string.IsNullOrEmpty(requestSite.CerPath))
             {
                 //初始化对像，并设置请求的URL地址
-                _request = (HttpWebRequest) WebRequest.Create(objhttpItem.Url);
-                SetCerList(objhttpItem);
+                _request = (HttpWebRequest) WebRequest.Create(requestSite.Url);
+                SetCerList(requestSite);
                 //将证书添加到请求里
-                _request.ClientCertificates.Add(new X509Certificate(objhttpItem.CerPath));
+                _request.ClientCertificates.Add(new X509Certificate(requestSite.CerPath));
             }
             else
             {
                 //初始化对像，并设置请求的URL地址
-                _request = (HttpWebRequest) WebRequest.Create(objhttpItem.Url);
-                SetCerList(objhttpItem);
+                _request = (HttpWebRequest) WebRequest.Create(requestSite.Url);
+                SetCerList(requestSite);
             }
         }
 
         /// <summary>
         ///     设置多个证书
         /// </summary>
-        /// <param name="objhttpItem"></param>
-        private void SetCerList(HttpItem objhttpItem)
+        /// <param name="requestSite"></param>
+        private void SetCerList(Site requestSite)
         {
-            if (objhttpItem.ClentCertificates != null && objhttpItem.ClentCertificates.Count > 0)
+            if (requestSite.ClentCertificates != null && requestSite.ClentCertificates.Count > 0)
             {
-                foreach (var item in objhttpItem.ClentCertificates)
+                foreach (var item in requestSite.ClentCertificates)
                 {
                     _request.ClientCertificates.Add(item);
                 }
@@ -277,53 +282,53 @@ namespace Crawler
         /// <summary>
         ///     设置Cookie
         /// </summary>
-        /// <param name="objhttpItem">Http参数</param>
-        private void SetCookie(HttpItem objhttpItem)
+        /// <param name="requestSite">Http参数</param>
+        private void SetCookie(Site requestSite)
         {
-            if (!string.IsNullOrEmpty(objhttpItem.Cookie))
+            if (!string.IsNullOrEmpty(requestSite.Cookie))
                 //Cookie
             {
-                _request.Headers[HttpRequestHeader.Cookie] = objhttpItem.Cookie;
+                _request.Headers[HttpRequestHeader.Cookie] = requestSite.Cookie;
             }
             //设置Cookie
-            if (objhttpItem.CookieCollection != null)
+            if (requestSite.CookieCollection != null)
             {
                 _request.CookieContainer = new CookieContainer();
-                _request.CookieContainer.Add(objhttpItem.CookieCollection);
+                _request.CookieContainer.Add(requestSite.CookieCollection);
             }
         }
 
         /// <summary>
         ///     设置Post数据
         /// </summary>
-        /// <param name="objhttpItem">Http参数</param>
-        private void SetPostData(HttpItem objhttpItem)
+        /// <param name="requestSite">Http参数</param>
+        private void SetPostData(Site requestSite)
         {
             //验证在得到结果时是否有传入数据
             if (_request.Method.Trim().ToLower().Contains("post"))
             {
-                if (objhttpItem.PostEncoding != null)
+                if (requestSite.PostEncoding != null)
                 {
-                    _postencoding = objhttpItem.PostEncoding;
+                    _postencoding = requestSite.PostEncoding;
                 }
                 byte[] buffer = null;
                 //写入Byte类型
-                if (objhttpItem.PostDataType == PostDataType.Byte && objhttpItem.PostdataByte != null &&
-                    objhttpItem.PostdataByte.Length > 0)
+                if (requestSite.PostDataType == PostDataType.Byte && requestSite.PostdataByte != null &&
+                    requestSite.PostdataByte.Length > 0)
                 {
                     //验证在得到结果时是否有传入数据
-                    buffer = objhttpItem.PostdataByte;
+                    buffer = requestSite.PostdataByte;
                 } //写入文件
-                else if (objhttpItem.PostDataType == PostDataType.FilePath &&
-                         !string.IsNullOrEmpty(objhttpItem.Postdata))
+                else if (requestSite.PostDataType == PostDataType.FilePath &&
+                         !string.IsNullOrEmpty(requestSite.Postdata))
                 {
-                    var r = new StreamReader(objhttpItem.Postdata, _postencoding);
+                    var r = new StreamReader(requestSite.Postdata, _postencoding);
                     buffer = _postencoding.GetBytes(r.ReadToEnd());
                     r.Close();
                 } //写入字符串
-                else if (!string.IsNullOrEmpty(objhttpItem.Postdata))
+                else if (!string.IsNullOrEmpty(requestSite.Postdata))
                 {
-                    buffer = _postencoding.GetBytes(objhttpItem.Postdata);
+                    buffer = _postencoding.GetBytes(requestSite.Postdata);
                 }
                 if (buffer != null)
                 {
@@ -336,8 +341,8 @@ namespace Crawler
         /// <summary>
         ///     设置代理
         /// </summary>
-        /// <param name="objhttpItem">参数对象</param>
-        private void SetProxy(HttpItem objhttpItem)
+        /// <param name="requestSite">参数对象</param>
+        private void SetProxy(Site requestSite)
         {
             if (_webProxy != null)
             {
@@ -347,23 +352,23 @@ namespace Crawler
                 return;
             }
 
-            if (!string.IsNullOrEmpty(objhttpItem.ProxyIp))
+            if (!string.IsNullOrEmpty(requestSite.ProxyIp))
             {
                 //设置代理服务器
-                if (objhttpItem.ProxyIp.Contains(":"))
+                if (requestSite.ProxyIp.Contains(":"))
                 {
-                    var plist = objhttpItem.ProxyIp.Split(':');
+                    var plist = requestSite.ProxyIp.Split(':');
                     var myProxy = new WebProxy(plist[0].Trim(), Convert.ToInt32(plist[1].Trim()));
                     //建议连接
-                    myProxy.Credentials = new NetworkCredential(objhttpItem.ProxyUserName, objhttpItem.ProxyPwd);
+                    myProxy.Credentials = new NetworkCredential(requestSite.ProxyUserName, requestSite.ProxyPwd);
                     //给当前请求对象
                     _request.Proxy = _webProxy ?? myProxy;
                 }
                 else
                 {
-                    var myProxy = new WebProxy(objhttpItem.ProxyIp, false);
+                    var myProxy = new WebProxy(requestSite.ProxyIp, false);
                     //建议连接
-                    myProxy.Credentials = new NetworkCredential(objhttpItem.ProxyUserName, objhttpItem.ProxyPwd);
+                    myProxy.Credentials = new NetworkCredential(requestSite.ProxyUserName, requestSite.ProxyPwd);
                     //给当前请求对象
                     _request.Proxy = _webProxy ?? myProxy;
                 }
@@ -375,17 +380,17 @@ namespace Crawler
         /// <summary>
         ///     设置host
         /// </summary>
-        /// <param name="objhttpItem"></param>
-        private void SetHost(HttpItem objhttpItem)
+        /// <param name="requestSite"></param>
+        private void SetHost(Site requestSite)
         {
-            if (!string.IsNullOrEmpty(objhttpItem.Host))
+            if (!string.IsNullOrEmpty(requestSite.Host))
             {
                 var property = typeof(WebHeaderCollection).GetProperty("InnerCollection",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 var collection = property?.GetValue(_request.Headers, null) as NameValueCollection;
                 if (collection != null)
                 {
-                    collection["Host"] = objhttpItem.Host;
+                    collection["Host"] = requestSite.Host;
                 }
             }
         }
@@ -444,7 +449,7 @@ namespace Crawler
     /// <summary>
     ///     Http请求参考类
     /// </summary>
-    public class HttpItem
+    public class Site
     {
         /// <summary>
         ///     获取或设置Host.
@@ -539,7 +544,7 @@ namespace Crawler
         /// <summary>
         ///     最大连接数
         /// </summary>
-        public int Connectionlimit { get; set; } = 1024;
+        public int Connectionlimit { get; set; } = int.MaxValue;
 
         /// <summary>
         ///     代理Proxy 服务器用户名

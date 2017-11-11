@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.6.3.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.6.3\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,12 +44,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Crawler.cs" />
+    <Compile Include="CrawlerBuilder.cs" />
+    <Compile Include="CrawlerConfiguration.cs" />
     <Compile Include="CrawlerState.cs" />
     <Compile Include="Downloader.cs" />
+    <Compile Include="ICrawler.cs" />
+    <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="BaseContext.cs" />
+    <Compile Include="Logger\SimpleLogger.cs" />
+    <Compile Include="Page.cs" />
+    <Compile Include="Pipeline\CrawlerPipeline.cs" />
     <Compile Include="Pipeline\IPipeline.cs" />
+    <Compile Include="Pipeline\PipelineContext.cs" />
+    <Compile Include="Pipeline\PipelineOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheduler\DefaultScheduler.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
