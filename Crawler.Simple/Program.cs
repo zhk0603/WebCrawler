@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Crawler.Downloader;
 using Crawler.Pipelines;
 
 namespace Crawler.Simple
@@ -12,10 +14,10 @@ namespace Crawler.Simple
             var builder = new CrawlerBuilder();
 
             var sites = new List<Site>();
-            for (var i = 1; i <= 1; i++)
+            for (var i = 1; i <= 5; i++)
                 sites.Add(new Site
                 {
-                    Url = $"https://www.baidu.com/"
+                    Url = $"https://news.cnblogs.com/n/page/{i}/"
                 });
 
             builder
@@ -23,13 +25,23 @@ namespace Crawler.Simple
                 .UsePipeline(typeof(Pipeline1), new PipelineOptions())
                 .UsePipeline<Pipeline2>(new PipelineOptions())
                 .UsePipeline<Pipeline3>()
-                .UseMultiThread(2)
+                .UseMultiThread(1)
                 .UseNamed("Simple Crawler");
 
             var crawler = builder.Builder();
             crawler.Run();
-
             Console.ReadKey();
+
+            builder.ClearPipelines()
+                .ClearSites()
+                .AddSite("http://www.cnielts.com/topic/list_18_1.html")
+                .UsePipeline<CnieltsPipeline1>()
+                .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
+                .UseNamed("CnieltsSpider");
+            crawler = builder.Builder();
+            crawler.Run();
+            Console.ReadKey();
+
         }
     }
 
@@ -46,15 +58,16 @@ namespace Crawler.Simple
 
         protected override Task<bool> ExecuteAsync(PipelineContext context)
         {
-            var node = context.Page.HtmlNode;
-            if (node != null)
+            return Task.Factory.StartNew(() =>
             {
-                var titleColl = node.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
+                var node = context.Page.HtmlNode;
+                var titleColl = node?.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
                 if (titleColl != null)
                     foreach (var title in titleColl)
                         Console.WriteLine("标题：" + title.InnerText);
-            }
-            return Task.FromResult(true);
+
+                return false;
+            });
         }
 
         public override Task AfterExceute(PipelineContext context)

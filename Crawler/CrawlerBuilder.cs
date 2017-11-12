@@ -28,6 +28,11 @@ namespace Crawler
 
         public Dictionary<string, object> Properties { get; }
 
+        public CrawlerBuilder AddSite(string url)
+        {
+            var site = new Site(url);
+            return AddSite(site);
+        }
         public CrawlerBuilder AddSite(Site site)
         {
             if (site == null)
@@ -60,6 +65,18 @@ namespace Crawler
             where T : IPipeline
         {
             return UsePipeline(typeof(T), options);
+        }
+
+        public CrawlerBuilder ClearSites()
+        {
+            _sites.Clear();
+            return this;
+        }
+        public CrawlerBuilder ClearPipelines()
+        {
+            _pipelines.Clear();
+            _pipelineTuples.Clear();
+            return this;
         }
 
         private Tuple<Delegate, object[]> PipelineFactory(Type pipelineType, params object[] args)
@@ -169,6 +186,7 @@ namespace Crawler
         }
 
         public bool IsComplete { get; set; }
+        public bool IsSkip { get; set; }
 
         Task IPipeline.ExecuteAsync(PipelineContext context)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Crawler.Downloader;
 using Crawler.Logger;
 using Crawler.Pipelines;
 using Crawler.Scheduler;
@@ -119,10 +120,8 @@ namespace Crawler
                                 CrawlerState = CrawlerState.Finished;
                                 break;
                             }
-
-                            page = new Downloader().GetPage(site);
+                            page = new HttpDownloader().GetPage(site);
                         }
-
 
                         var context = new PipelineContext
                         {
@@ -131,7 +130,7 @@ namespace Crawler
                             Configuration = new CrawlerConfiguration
                             {
                                 Pipeline = Pipeline,
-                                Sites = _sites,
+                                StartSites = _sites,
                                 ThreadNum = _threadNum
                             }
                         };

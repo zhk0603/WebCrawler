@@ -5,7 +5,7 @@ namespace Crawler
 {
     public class CrawlerConfiguration
     {
-        public IEnumerable<Site> Sites { get; set; }
+        public IEnumerable<Site> StartSites { get; set; }
         public int ThreadNum { get; set; }
         public IPipeline Pipeline { get; set; }
     }

@@ -6,6 +6,5 @@ namespace Crawler.Pipelines
     {
         public string Name { get; set; }
         public IScheduler Scheduler { get; set; }
-        public ICrawler Crawler { get; set; }
     }
 }
