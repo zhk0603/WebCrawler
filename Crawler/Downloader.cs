@@ -198,7 +198,10 @@ namespace Crawler
         private void SetRequest(Site requestSite)
         {
             //设置安全协议
-            //ServicePointManager.SecurityProtocol = requestSite.SecurityProtocolType;
+            if (requestSite.SecurityProtocolType.HasValue)
+            {
+                ServicePointManager.SecurityProtocol = requestSite.SecurityProtocolType.Value;
+            }
             // 验证证书
             SetCer(requestSite);
             //设置Header参数
@@ -543,7 +546,7 @@ namespace Crawler
         /// <summary>
         ///     指定Schannel安全包支持的安全协议
         /// </summary>
-        public SecurityProtocolType SecurityProtocolType { get; set; }
+        public SecurityProtocolType? SecurityProtocolType { get; set; }
 
         /// <summary>
         ///     设置或获取Post参数编码,默认的为Default编码

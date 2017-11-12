@@ -11,45 +11,60 @@ namespace Crawler.Scheduler
 
         object IScheduler.Pop()
         {
-            return Pop();
+            // 进入可升级读模式，因为在获取一个 site 后需要从 list 中移除。
+            _lock.EnterUpgradeableReadLock();
+            try
+            {
+                return Pop();
+            }
+            finally
+            {
+                _lock.ExitUpgradeableReadLock();
+            }
         }
 
         void IScheduler.Push(object @object)
         {
-            if (@object is Site requestSite)
-                Push(requestSite);
-        }
-
-        public virtual Site Pop()
-        {
+            _lock.EnterWriteLock();
             try
             {
-                _lock.EnterReadLock();
-
-                if (_siteStack.Count == 0)
-                    return null;
-
-                var site = _siteStack.FirstOrDefault();
-                _siteStack.RemoveAt(0);
-                return site;
-            }
-            finally
-            {
-                _lock.ExitReadLock();
-            }
-        }
-
-        public virtual void Push(Site requestSite)
-        {
-            try
-            {
-                _lock.EnterWriteLock();
-                _siteStack.Add(requestSite);
+                if (@object is Site requestSite)
+                    Push(requestSite);
             }
             finally
             {
                 _lock.ExitWriteLock();
             }
+        }
+
+        public virtual Site Pop()
+        {
+            if (_siteStack.Count == 0)
+                return null;
+
+            var site = _siteStack.FirstOrDefault();
+
+            _lock.EnterWriteLock();
+            try
+            {
+                _siteStack.RemoveAt(0);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+
+            return site;
+        }
+
+        public virtual void Push(Site requestSite)
+        {
+            _siteStack.Add(requestSite);
+        }
+
+        ~SiteScheduler()
+        {
+            _lock?.Dispose();
         }
     }
 }

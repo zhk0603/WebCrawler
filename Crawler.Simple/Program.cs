@@ -12,10 +12,10 @@ namespace Crawler.Simple
             var builder = new CrawlerBuilder();
 
             var sites = new List<Site>();
-            for (var i = 1; i <= 3; i++)
+            for (var i = 1; i <= 1; i++)
                 sites.Add(new Site
                 {
-                    Url = $"https://news.cnblogs.com/n/page/{i}/"
+                    Url = $"https://www.baidu.com/"
                 });
 
             builder
@@ -50,8 +50,9 @@ namespace Crawler.Simple
             if (node != null)
             {
                 var titleColl = node.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
-                foreach (var title in titleColl)
-                    Console.WriteLine("标题：" + title.InnerText);
+                if (titleColl != null)
+                    foreach (var title in titleColl)
+                        Console.WriteLine("标题：" + title.InnerText);
             }
             return Task.FromResult(true);
         }

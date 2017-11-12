@@ -122,14 +122,14 @@ namespace Crawler
         internal Crawler BuilderInternal()
         {
             ConvertPipeline();
-            var crawler = new Crawler(_sites, ConnectionPipeline());
+            var crawler = new Crawler(_sites, StitchingPipeline());
             crawler.ThreadNum = _threadNum;
             if (!string.IsNullOrWhiteSpace(_named))
                 crawler.Name = _named;
             return crawler;
         }
 
-        private IPipeline ConnectionPipeline()
+        private IPipeline StitchingPipeline()
         {
             IPipeline root = null;
             IPipeline next = null;

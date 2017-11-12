@@ -137,8 +137,6 @@ namespace Crawler
                         };
 
                         Pipeline.ExecuteAsync(context).GetAwaiter().GetResult();
-                        Logger.Write("1", null, LogLevel.Debug);
-                        Thread.Sleep(1000);
                     }
                 });
             }
