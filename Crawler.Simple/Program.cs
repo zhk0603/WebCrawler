@@ -13,24 +13,24 @@ namespace Crawler.Simple
         {
             var builder = new CrawlerBuilder();
 
-            var sites = new List<Site>();
-            for (var i = 1; i <= 5; i++)
-                sites.Add(new Site
-                {
-                    Url = $"https://news.cnblogs.com/n/page/{i}/"
-                });
-
-            builder
-                .AddSiteRange(sites)
-                .UsePipeline(typeof(Pipeline1), new PipelineOptions())
-                .UsePipeline<Pipeline2>(new PipelineOptions())
-                .UsePipeline<Pipeline3>()
-                .UseMultiThread(1)
-                .UseNamed("Simple Crawler");
-
-            var crawler = builder.Builder();
-            crawler.Run();
-            Console.ReadKey();
+            //var sites = new List<Site>();
+            //for (var i = 1; i <= 5; i++)
+            //    sites.Add(new Site
+            //    {
+            //        Url = $"https://news.cnblogs.com/n/page/{i}/"
+            //    });
+            //
+            //builder
+            //    .AddSiteRange(sites)
+            //    .UsePipeline(typeof(Pipeline1), new PipelineOptions())
+            //    .UsePipeline<Pipeline2>(new PipelineOptions())
+            //    .UsePipeline<Pipeline3>()
+            //    .UseMultiThread(1)
+            //    .UseNamed("Simple Crawler");
+            //
+            //var crawler = builder.Builder();
+            //crawler.Run();
+            //Console.ReadKey();
 
             builder.ClearPipelines()
                 .ClearSites()
@@ -38,7 +38,7 @@ namespace Crawler.Simple
                 .UsePipeline<CnieltsPipeline1>()
                 .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
                 .UseNamed("CnieltsSpider");
-            crawler = builder.Builder();
+            var crawler = builder.Builder();
             crawler.Run();
             Console.ReadKey();
 

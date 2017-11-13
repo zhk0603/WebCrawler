@@ -28,7 +28,7 @@ namespace Crawler
             Expect100Continue = true;
             Connectionlimit = int.MaxValue;
         }
-        public Site(string url)
+        public Site(string url) : this()
         {
             Url = url;
         }

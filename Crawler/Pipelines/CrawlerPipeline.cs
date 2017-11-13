@@ -7,8 +7,7 @@ namespace Crawler.Pipelines
 {
     public class CrawlerPipeline : IPipeline
     {
-        private readonly ILogger _logger;
-
+        private IPipeline _next;
         void IPipeline.Initialize()
         {
             BaseInitialize();
@@ -17,21 +16,26 @@ namespace Crawler.Pipelines
         public virtual string Name { get; set; }
         public virtual bool IsComplete { get; set; }
         public virtual bool IsSkip { get; set; }
-        public IPipeline Next { get; set; }
+
+        IPipeline IPipeline.Next
+        {
+            get => _next;
+            set => _next = value;
+        }
 
         async Task IPipeline.ExecuteAsync(PipelineContext context)
         {
             if (this.IsComplete || this.IsSkip)
             {
                 Console.WriteLine($"管道：【{this.Name}】已完成，直接进入下一管道。");
-                if (Next != null) await Next?.ExecuteAsync(context);
+                if (_next != null) await _next?.ExecuteAsync(context);
                 return;
             }
 
             BaseInitialize();
 
             if (await ExecuteAsync(context))
-                if (Next != null) await Next?.ExecuteAsync(context);
+                if (_next != null) await _next?.ExecuteAsync(context);
 
             await AfterExceute(context);
         }
