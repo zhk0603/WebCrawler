@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Crawler.Downloader;
+using Crawler.Logger;
 using Crawler.Pipelines;
+using LogManager = NLog.LogManager;
 
 namespace Crawler.Simple
 {
@@ -13,41 +15,47 @@ namespace Crawler.Simple
         {
             var builder = new CrawlerBuilder();
 
-            //var sites = new List<Site>();
-            //for (var i = 1; i <= 5; i++)
-            //    sites.Add(new Site
-            //    {
-            //        Url = $"https://news.cnblogs.com/n/page/{i}/"
-            //    });
-
-            //builder
-            //    .AddSiteRange(sites)
-            //    .UsePipeline(typeof(Pipeline1), new PipelineOptions())
-            //    .UsePipeline<Pipeline2>(new PipelineOptions())
-            //    .UsePipeline<Pipeline3>()
-            //    .UseMultiThread(8)
-            //    .UseNamed("Simple Crawler");
-
-            //var crawler = builder.Builder();
-            //crawler.Run();
-            //Console.ReadKey();
-
-            builder.ClearPipelines()
-                .ClearSites()
-                .AddSite("http://www.cnielts.com/topic/list_18_1.html")
-                .AddSite("http://www.cnielts.com/topic/list_18_2.html")
-                .AddSite("http://www.cnielts.com/topic/list_18_3.html")
-                .UsePipeline<CnieltsPipeline1>()
-                .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
-                .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
+            var sites = new List<Site>();
+            for (var i = 1; i <= 5; i++)
+                sites.Add(new Site
                 {
-                    DownloadDirectory = "~/Cnielts/新概念第一册",
-                    Downloader = new HttpDownloader()
-                })
-                .UseMultiThread(3)
-                .UseNamed("CnieltsSpider");
+                    Url = $"https://news.cnblogs.com/n/page/{i}/"
+                });
+
+            builder
+                .AddSiteRange(sites)
+                .SetLogFactory(new NLoggerFactory())
+                .UsePipeline(typeof(Pipeline1), new PipelineOptions())
+                .UsePipeline<Pipeline2>(new PipelineOptions())
+                .UsePipeline<Pipeline3>()
+                .UseMultiThread(8)
+                .UseNamed("Simple Crawler");
+
             var crawler = builder.Builder();
             crawler.Run();
+            Console.ReadKey();
+
+            //builder.ClearPipelines()
+            //    .ClearSites()
+            //    .AddSite("http://www.cnielts.com/topic/list_18_1.html")
+            //    .AddSite("http://www.cnielts.com/topic/list_18_2.html")
+            //    .AddSite("http://www.cnielts.com/topic/list_18_3.html")
+            //    .UsePipeline<CnieltsPipeline1>()
+            //    .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
+            //    .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
+            //    {
+            //        DownloadDirectory = "~/Cnielts/新概念第一册",
+            //        Downloader = new HttpDownloader()
+            //    })
+            //    .UseMultiThread(3)
+            //    .UseNamed("CnieltsSpider");
+            //var crawler = builder.Builder();
+            //crawler.Run();
+
+
+            NLog.Logger logger = LogManager.GetCurrentClassLogger();
+            logger.Error("123");
+
             Console.ReadKey();
         }
     }

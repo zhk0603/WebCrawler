@@ -18,11 +18,11 @@ namespace Crawler
         private DateTime _endTime;
         private IPipeline _pipelin;
         private int _threadNum;
+        private string _named;
 
         public Crawler()
         {
             _scheduler = new SiteScheduler();
-            Logger = new SimpleLogger();
             _downloader = new HttpDownloader();
         }
 
@@ -38,7 +38,15 @@ namespace Crawler
         {
         }
 
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _named;
+            set
+            {
+                _named = value;
+                Logger = LogManager.GetLogger(_named);
+            }
+        }
 
         public int ThreadNum
         {
@@ -56,7 +64,7 @@ namespace Crawler
 
         public CrawlerState CrawlerState { get; protected set; }
 
-        public ILogger Logger { get; }
+        public ILogger Logger { get; protected set; }
 
         public IPipeline Pipeline
         {
@@ -143,7 +151,7 @@ namespace Crawler
             }
 
             _endTime = DateTime.Now;
-            Logger.Write("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds, null, LogLevel.Info);
+            Logger.Info("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds);
         }
 
         public Task RunAsync()

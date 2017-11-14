@@ -35,7 +35,9 @@ namespace Crawler.Pipelines
             BaseInitialize();
 
             if (await ExecuteAsync(context))
+            {
                 if (_next != null) await _next?.ExecuteAsync(context);
+            }
 
             await AfterExceute(context);
         }

@@ -33,6 +33,9 @@
     <Reference Include="HtmlAgilityPack, Version=1.6.3.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.1.6.3\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,11 +54,15 @@
     <Compile Include="Downloader\Downloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />
     <Compile Include="ICrawler.cs" />
+    <Compile Include="Logger\ILoggerFactory.cs" />
     <Compile Include="Logger\LogLevel.cs" />
+    <Compile Include="Logger\LogManager.cs" />
+    <Compile Include="Logger\NLoggerFactory.cs" />
+    <Compile Include="Pipelines\PipelineData.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="BaseContext.cs" />
-    <Compile Include="Logger\SimpleLogger.cs" />
+    <Compile Include="Logger\NLogger.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="Pipelines\CrawlerPipeline.cs" />
     <Compile Include="Pipelines\IPipeline.cs" />

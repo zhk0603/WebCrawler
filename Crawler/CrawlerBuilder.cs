@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
+using Crawler.Logger;
 using Crawler.Pipelines;
 
 namespace Crawler
@@ -51,6 +52,17 @@ namespace Crawler
             foreach (var site in sites)
                 _sites.Add(site);
 
+            return this;
+        }
+
+        public CrawlerBuilder SetLogFactory(ILoggerFactory loggerFactory)
+        {
+            if (loggerFactory == null)
+            {
+                throw new ArgumentNullException(nameof(loggerFactory));
+            }
+
+            LogManager.SetLogFactory(loggerFactory);
             return this;
         }
 
@@ -139,8 +151,7 @@ namespace Crawler
         internal Crawler BuilderInternal()
         {
             ConvertPipeline();
-            var crawler = new Crawler(_sites, StitchingPipeline());
-            crawler.ThreadNum = _threadNum;
+            var crawler = new Crawler(_sites, StitchingPipeline()) {ThreadNum = _threadNum};
             if (!string.IsNullOrWhiteSpace(_named))
                 crawler.Name = _named;
             return crawler;

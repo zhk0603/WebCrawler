@@ -6,12 +6,12 @@ namespace Crawler.Pipelines
     {
         public PipelineContext()
         {
-            PipelineData = new Dictionary<string, object>();
+            PipelineData = new PipelineData();
         }
 
         public ICrawler Crawler { get; set; }
         public CrawlerConfiguration Configuration { get; set; }
         public Page Page { get; set; }
-        public IDictionary<string, object> PipelineData { get; set; }
+        public PipelineData PipelineData { get; set; }
     }
 }

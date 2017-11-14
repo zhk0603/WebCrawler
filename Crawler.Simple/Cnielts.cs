@@ -81,7 +81,7 @@ namespace Crawler.Simple
 
                     context.PipelineData["DownloadUrls"] = downloadUrls;
                 }
-                return true;
+                return false;
             });
         }
     }
