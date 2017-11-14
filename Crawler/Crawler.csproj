@@ -56,7 +56,7 @@
     <Compile Include="ICrawler.cs" />
     <Compile Include="Logger\ILoggerFactory.cs" />
     <Compile Include="Logger\LogLevel.cs" />
-    <Compile Include="Logger\LogManager.cs" />
+    <Compile Include="Logger\LoggerManager.cs" />
     <Compile Include="Logger\NLoggerFactory.cs" />
     <Compile Include="Pipelines\PipelineData.cs" />
     <Compile Include="Scheduler\IScheduler.cs" />
@@ -69,7 +69,7 @@
     <Compile Include="Pipelines\PipelineContext.cs" />
     <Compile Include="Pipelines\PipelineOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scheduler\SchedulerFactory.cs" />
+    <Compile Include="Scheduler\SchedulerManager.cs" />
     <Compile Include="Scheduler\SiteScheduler.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="UrlHelper.cs" />

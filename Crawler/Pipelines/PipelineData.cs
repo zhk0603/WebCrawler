@@ -21,12 +21,7 @@ namespace Crawler.Pipelines
 
         public T GetPreviousData<T>()
         {
-            TryGetValue(Constants.PipelineDataKey, out var @object);
-            if (@object is T variable)
-            {
-                return variable;
-            }
-            return default(T);
+            return GetValue<T>(Constants.PipelineDataKey);
         }
 
         public T GetValue<T>(string key)

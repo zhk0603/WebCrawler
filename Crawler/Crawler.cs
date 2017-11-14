@@ -44,7 +44,7 @@ namespace Crawler
             set
             {
                 _named = value;
-                Logger = LogManager.GetLogger(_named);
+                Logger = LoggerManager.GetLogger(_named);
             }
         }
 

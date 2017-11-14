@@ -83,10 +83,12 @@ namespace Crawler.Pipelines
             var savePath = _path + fileName;
             if (!File.Exists(savePath))
             {
-                var fileStream = new FileStream(savePath, FileMode.Create);
-                fileStream.Write(bytes, 0, bytes.Length);
-                await fileStream.FlushAsync();
-                fileStream.Close();
+                using (var fileStream = new FileStream(savePath, FileMode.Create))
+                {
+                    fileStream.Write(bytes, 0, bytes.Length);
+                    await fileStream.FlushAsync();
+                    fileStream.Close();
+                }
             }
         }
     }

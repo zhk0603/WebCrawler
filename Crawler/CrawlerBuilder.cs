@@ -62,7 +62,7 @@ namespace Crawler
                 throw new ArgumentNullException(nameof(loggerFactory));
             }
 
-            LogManager.SetLogFactory(loggerFactory);
+            LoggerManager.SetLogFactory(loggerFactory);
             return this;
         }
 

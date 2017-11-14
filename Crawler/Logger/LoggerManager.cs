@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Crawler.Logger
 {
-    public static class LogManager
+    public static class LoggerManager
     {
         private static ILoggerFactory _loggerFactory;
 

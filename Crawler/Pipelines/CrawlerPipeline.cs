@@ -7,12 +7,18 @@ namespace Crawler.Pipelines
 {
     public class CrawlerPipeline : IPipeline
     {
+        public CrawlerPipeline()
+        {
+            Logger = LoggerManager.GetLogger(GetType());
+        }
+
         private IPipeline _next;
         void IPipeline.Initialize()
         {
             BaseInitialize();
         }
 
+        public ILogger Logger { get; set; }
         public virtual string Name { get; set; }
         public virtual bool IsComplete { get; set; }
         public virtual bool IsSkip { get; set; }
@@ -27,8 +33,12 @@ namespace Crawler.Pipelines
         {
             if (this.IsComplete || this.IsSkip)
             {
-                Console.WriteLine($"管道：【{this.Name}】已完成，直接进入下一管道。");
-                if (_next != null) await _next?.ExecuteAsync(context);
+                if (_next != null)
+                {
+                    Logger?.Info($"管道：【{this.Name}】已完成，直接进入下一管道。");
+                    await _next?.ExecuteAsync(context);
+                }
+
                 return;
             }
 
