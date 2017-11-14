@@ -54,6 +54,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Crawler.Pipelines\Crawler.Pipelines.csproj">
+      <Project>{52A4917E-5783-434C-9EC6-6F33E39E97AD}</Project>
+      <Name>Crawler.Pipelines</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Crawler\Crawler.csproj">
       <Project>{12f0835b-de25-42b7-adc2-6f35899a6e8c}</Project>
       <Name>Crawler</Name>

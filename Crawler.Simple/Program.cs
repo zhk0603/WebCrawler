@@ -19,15 +19,15 @@ namespace Crawler.Simple
             //    {
             //        Url = $"https://news.cnblogs.com/n/page/{i}/"
             //    });
-            //
+
             //builder
             //    .AddSiteRange(sites)
             //    .UsePipeline(typeof(Pipeline1), new PipelineOptions())
             //    .UsePipeline<Pipeline2>(new PipelineOptions())
             //    .UsePipeline<Pipeline3>()
-            //    .UseMultiThread(1)
+            //    .UseMultiThread(8)
             //    .UseNamed("Simple Crawler");
-            //
+
             //var crawler = builder.Builder();
             //crawler.Run();
             //Console.ReadKey();
@@ -37,11 +37,14 @@ namespace Crawler.Simple
                 .AddSite("http://www.cnielts.com/topic/list_18_1.html")
                 .UsePipeline<CnieltsPipeline1>()
                 .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
+                .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
+                {
+                    DownloadDirectory = "~/Cnielts/新概念第一册"
+                })
                 .UseNamed("CnieltsSpider");
             var crawler = builder.Builder();
             crawler.Run();
             Console.ReadKey();
-
         }
     }
 
@@ -72,7 +75,7 @@ namespace Crawler.Simple
 
         public override Task AfterExceute(PipelineContext context)
         {
-            Console.WriteLine("处理管道1-结束");
+            Console.WriteLine("处理管道1-结束" + context.Page.Uri);
             return Task.FromResult(0);
         }
     }

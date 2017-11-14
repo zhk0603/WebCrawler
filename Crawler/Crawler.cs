@@ -13,6 +13,7 @@ namespace Crawler
     {
         private readonly IScheduler _scheduler;
         private readonly IEnumerable<Site> _sites;
+        private readonly IDownloader _downloader;
         private DateTime _beginTime;
         private DateTime _endTime;
         private IPipeline _pipelin;
@@ -22,6 +23,7 @@ namespace Crawler
         {
             _scheduler = new SiteScheduler();
             Logger = new SimpleLogger();
+            _downloader = new HttpDownloader();
         }
 
         public Crawler(string name, IEnumerable<Site> sites, IPipeline pipeline) : this()
@@ -120,7 +122,7 @@ namespace Crawler
                                 CrawlerState = CrawlerState.Finished;
                                 break;
                             }
-                            page = new HttpDownloader().GetPage(site);
+                            page = _downloader.GetPage(site);
                         }
 
                         var context = new PipelineContext

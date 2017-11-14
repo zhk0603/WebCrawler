@@ -95,6 +95,13 @@ namespace Crawler.Simple
         public Downloader.IDownloader Downloader { get; set; }
     }
 
+    public class CnielstPipeline3 : FileDownloadPipeline
+    {
+        public CnielstPipeline3(FileDownloadOptions options) : base(options)
+        {
+        }
+    }
+
     public class Course
     {
         public string Title { get; set; }
