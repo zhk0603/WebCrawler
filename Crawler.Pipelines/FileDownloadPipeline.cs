@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using Crawler.Downloader;
@@ -45,14 +46,14 @@ namespace Crawler.Pipelines
             if (relativePath.StartsWith("../"))
             {
                 var index = 0;
-                for (var i = 0; i < relativeDirectories.Length; i++)
+                foreach (var dir in relativeDirectories)
                 {
-                    var dir = relativeDirectories[i];
                     if (dir.Equals(".."))
                     {
                         ++index;
                     }
                 }
+
                 if (index == -1 || index == absoluteDirectories.Length - 1)
                 {
                     throw new System.ArgumentException($"路径：{relativePath}，不是有效的相对路径。");
@@ -67,18 +68,26 @@ namespace Crawler.Pipelines
                 var pathDirs = absoluteDirectories.Concat(relativeDirectories.Skip(1));
                 sb.Append(string.Join("\\", pathDirs));
             }
+            sb.Append("\\");
             return sb.ToString();
         }
 
         protected override async Task<bool> ExecuteAsync(PipelineContext context)
         {
-            await InternalExecuteAsync(context.Page.ResultByte);
+            await SaveAsync(context.Page.ResultByte,context.Page.Cookie);
             return true;
         }
 
-        internal Task InternalExecuteAsync(byte[] bytes)
+        protected virtual async Task SaveAsync(byte[] bytes, string fileName)
         {
-            return Task.FromResult(1);
+            var savePath = _path + fileName;
+            if (!File.Exists(savePath))
+            {
+                var fileStream = new FileStream(savePath, FileMode.Create);
+                fileStream.Write(bytes, 0, bytes.Length);
+                await fileStream.FlushAsync();
+                fileStream.Close();
+            }
         }
     }
 

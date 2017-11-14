@@ -35,12 +35,16 @@ namespace Crawler.Simple
             builder.ClearPipelines()
                 .ClearSites()
                 .AddSite("http://www.cnielts.com/topic/list_18_1.html")
+                .AddSite("http://www.cnielts.com/topic/list_18_2.html")
+                .AddSite("http://www.cnielts.com/topic/list_18_3.html")
                 .UsePipeline<CnieltsPipeline1>()
                 .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
                 .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = "~/Cnielts/新概念第一册"
+                    DownloadDirectory = "~/Cnielts/新概念第一册",
+                    Downloader = new HttpDownloader()
                 })
+                .UseMultiThread(3)
                 .UseNamed("CnieltsSpider");
             var crawler = builder.Builder();
             crawler.Run();

@@ -100,6 +100,20 @@ namespace Crawler.Simple
         public CnielstPipeline3(FileDownloadOptions options) : base(options)
         {
         }
+
+        protected override async Task<bool> ExecuteAsync(PipelineContext context)
+        {
+            if (context.PipelineData.TryGetValue("DownloadUrls", out var downloadUrls))
+            {
+                foreach (var url in (List<string>)downloadUrls)
+                {
+                    var site = new Site(url) { ResultType = Downloader.ResultType.Byte };
+                    var page = Options.Downloader.GetPage(site);
+                    await SaveAsync(page.ResultByte, url.Substring(url.LastIndexOf('/') + 1));
+                }
+            }
+            return false;
+        }
     }
 
     public class Course
