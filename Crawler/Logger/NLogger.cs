@@ -11,6 +11,7 @@ namespace Crawler.Logger
             _logger = logger;
         }
 
+        public bool IsTraceEnabled => _logger.IsTraceEnabled;
         public bool IsDebugEnabled => _logger.IsDebugEnabled;
         public bool IsInfoEnabled => _logger.IsInfoEnabled;
         public bool IsWarnEnabled => _logger.IsWarnEnabled;
@@ -20,6 +21,9 @@ namespace Crawler.Logger
         {
             switch (logLevel)
             {
+                case LogLevel.Trace:
+                    _logger.Trace(exception, message);
+                    break;
                 case LogLevel.Debug:
                     _logger.Debug(exception, message);
                     break;
@@ -33,6 +37,16 @@ namespace Crawler.Logger
                     _logger.Error(exception, message);
                     break;
             }
+        }
+
+        public void Trace(string message)
+        {
+            Write(message, null, LogLevel.Trace);
+        }
+
+        public void Trace(string message, Exception exception)
+        {
+            Write(message, exception, LogLevel.Trace);
         }
 
         public void Debug(string message)

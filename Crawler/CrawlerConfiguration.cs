@@ -8,5 +8,6 @@ namespace Crawler
         public IEnumerable<Site> StartSites { get; set; }
         public int ThreadNum { get; set; }
         public IPipeline Pipeline { get; set; }
+        public ICrawler Crawler { get; set; }
     }
 }

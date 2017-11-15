@@ -13,50 +13,11 @@ namespace Crawler.Simple
     {
         private static void Main(string[] args)
         {
-            var builder = new CrawlerBuilder();
-
-            var sites = new List<Site>();
-            for (var i = 1; i <= 5; i++)
-                sites.Add(new Site
-                {
-                    Url = $"https://news.cnblogs.com/n/page/{i}/"
-                });
-
-            builder
-                .AddSiteRange(sites)
-                .SetLogFactory(new NLoggerFactory())
-                .UsePipeline(typeof(Pipeline1), new PipelineOptions())
-                .UsePipeline<Pipeline2>(new PipelineOptions())
-                .UsePipeline<Pipeline3>()
-                .UseMultiThread(8)
-                .UseNamed("Simple Crawler");
-
-            var crawler = builder.Builder();
-            crawler.Run();
+            SimpleCrawler.CnBlog().Run();
             Console.ReadKey();
 
-            //builder.ClearPipelines()
-            //    .ClearSites()
-            //    .AddSite("http://www.cnielts.com/topic/list_18_1.html")
-            //    .AddSite("http://www.cnielts.com/topic/list_18_2.html")
-            //    .AddSite("http://www.cnielts.com/topic/list_18_3.html")
-            //    .UsePipeline<CnieltsPipeline1>()
-            //    .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
-            //    .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
-            //    {
-            //        DownloadDirectory = "~/Cnielts/新概念第一册",
-            //        Downloader = new HttpDownloader()
-            //    })
-            //    .UseMultiThread(3)
-            //    .UseNamed("CnieltsSpider");
-            //var crawler = builder.Builder();
-            //crawler.Run();
-
-
-            NLog.Logger logger = LogManager.GetCurrentClassLogger();
-            logger.Error("123");
-
-            Console.ReadKey();
+            //SimpleCrawler.CnieltsSpider().Run();
+            //Console.ReadKey();
         }
     }
 
@@ -66,9 +27,10 @@ namespace Crawler.Simple
         {
         }
 
-        protected override void BaseInitialize()
+        protected override void Initialize(PipelineContext context)
         {
             Console.WriteLine("处理管道1-开始");
+            base.Initialize(context);
         }
 
         protected override Task<bool> ExecuteAsync(PipelineContext context)
@@ -76,6 +38,7 @@ namespace Crawler.Simple
             return Task.Factory.StartNew(() =>
             {
                 var node = context.Page.HtmlNode;
+                Logger.Debug(context.Page.HtmlSource);
                 var titleColl = node?.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
                 if (titleColl != null)
                     foreach (var title in titleColl)
@@ -98,7 +61,7 @@ namespace Crawler.Simple
         {
         }
 
-        protected override void BaseInitialize()
+        protected override void Initialize(PipelineContext context)
         {
             Console.WriteLine("\t处理管道2-开始");
         }
@@ -118,7 +81,7 @@ namespace Crawler.Simple
 
     internal class Pipeline3 : CrawlerPipeline
     {
-        protected override void BaseInitialize()
+        protected override void Initialize(PipelineContext context)
         {
             Console.WriteLine("\t\tI'm Pipeline3");
         }

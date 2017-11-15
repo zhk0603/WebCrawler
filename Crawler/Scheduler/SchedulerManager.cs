@@ -17,7 +17,7 @@ namespace Crawler.Scheduler
             Schedules = new Dictionary<string, IScheduler>();
         }
 
-        public IScheduler GetScheduler(string key)
+        public static IScheduler GetScheduler(string key)
         {
             if (!Schedules.TryGetValue(key, out var scheduler))
             {

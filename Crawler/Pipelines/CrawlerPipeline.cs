@@ -7,16 +7,14 @@ namespace Crawler.Pipelines
 {
     public class CrawlerPipeline : IPipeline
     {
+        private bool _initializen;
+        private readonly object _initLock = new object();
         public CrawlerPipeline()
         {
             Logger = LoggerManager.GetLogger(GetType());
         }
 
         private IPipeline _next;
-        void IPipeline.Initialize()
-        {
-            BaseInitialize();
-        }
 
         public ILogger Logger { get; set; }
         public virtual string Name { get; set; }
@@ -42,7 +40,17 @@ namespace Crawler.Pipelines
                 return;
             }
 
-            BaseInitialize();
+            if (!_initializen)
+            {
+                lock (_initLock)
+                {
+                    if (!_initializen)
+                    {
+                        Initialize(context);
+                        _initializen = true;
+                    }
+                }
+            }
 
             if (await ExecuteAsync(context))
             {
@@ -52,8 +60,14 @@ namespace Crawler.Pipelines
             await AfterExceute(context);
         }
 
-        protected virtual void BaseInitialize()
+
+        /// <summary>
+        ///     只会执行一次初始化操作。
+        /// </summary>
+        /// <param name="context"></param>
+        protected virtual void Initialize(PipelineContext context)
         {
+            Logger.Trace("initialize");
         }
 
         public virtual Task AfterExceute(PipelineContext context)

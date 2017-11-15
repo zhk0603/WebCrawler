@@ -219,14 +219,6 @@ namespace Crawler.Downloader
             return stream;
         }
 
-        ///// <summary>
-        /////     为请求准备参数
-        ///// </summary>
-        ///// <param name="requestSite">参数列表</param>
-        //private void SetRequest(Site requestSite,out HttpWebRequest request,out Encoding encoding,out Encoding postencoding)
-        //{
-        //}
-
         /// <summary>
         ///     设置证书
         /// </summary>

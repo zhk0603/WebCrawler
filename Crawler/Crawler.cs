@@ -139,6 +139,7 @@ namespace Crawler
                             Page = page,
                             Configuration = new CrawlerConfiguration
                             {
+                                Crawler = this,
                                 Pipeline = Pipeline,
                                 StartSites = _sites,
                                 ThreadNum = _threadNum
@@ -151,7 +152,7 @@ namespace Crawler
             }
 
             _endTime = DateTime.Now;
-            Logger.Info("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds);
+            Logger?.Info("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds);
         }
 
         public Task RunAsync()

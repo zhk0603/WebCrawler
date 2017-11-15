@@ -3,6 +3,10 @@
     public enum LogLevel
     {
         /// <summary>
+        ///     表示跟踪的日志级别
+        /// </summary>
+        Trace = 0,
+        /// <summary>
         ///     表示调试的日志级别
         /// </summary>
         Debug = 1,

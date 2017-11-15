@@ -8,19 +8,7 @@ namespace Crawler
 {
     public class UrlHelper
     {
-        private readonly string _domainUrl;
-
-        public UrlHelper(Site site)
-        {
-            _domainUrl = site.Host;
-        }
-
-        public UrlHelper(string domainUrl)
-        {
-            _domainUrl = domainUrl;
-        }
-
-        public string Content(string path)
+        public static string Content(string curUrl, string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -29,7 +17,7 @@ namespace Crawler
 
             if (path.StartsWith("~/") || path.StartsWith("/"))
             {
-                return _domainUrl + path;
+                //return _domainUrl + path;
             }
             return "";
         }

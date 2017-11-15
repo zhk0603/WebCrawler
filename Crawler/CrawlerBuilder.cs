@@ -134,12 +134,12 @@ namespace Crawler
 
         public CrawlerBuilder UseNamed(string named)
         {
-            _named = named;
-            return this;
-        }
+            if (string.IsNullOrWhiteSpace(named))
+            {
+                throw new ArgumentNullException(nameof(named));
+            }
 
-        public CrawlerBuilder UseLogger(Type loggerType)
-        {
+            _named = named;
             return this;
         }
 
@@ -192,10 +192,12 @@ namespace Crawler
 
     public class EmptyPipeline : IPipeline
     {
-        public void Initialize()
+        public EmptyPipeline()
         {
+            Name = "Empty Pipeline";
         }
 
+        public string Name { get; set; }
         public bool IsComplete { get; set; }
         public bool IsSkip { get; set; }
 
