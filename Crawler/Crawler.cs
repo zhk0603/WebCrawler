@@ -121,7 +121,6 @@ namespace Crawler
                     while (CrawlerState == CrawlerState.Running)
                     {
                         Page page = null;
-
                         if (_scheduler is SiteScheduler)
                         {
                             var site = (Site) _scheduler.Pop();

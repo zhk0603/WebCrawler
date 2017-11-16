@@ -4,9 +4,9 @@ using Crawler.Downloader;
 
 namespace Crawler.Pipelines
 {
-    public class UrlFinderPipeline : CrawlerPipeline<PageFinderOptons>
+    public class UrlFinderPipeline : CrawlerPipeline<UrlFinderOptons>
     {
-        protected UrlFinderPipeline(PageFinderOptons options) : base(options)
+        protected UrlFinderPipeline(UrlFinderOptons options) : base(options)
         {
             Options.Scheduler = Scheduler.SchedulerManager.GetScheduler(nameof(UrlFinderPipeline));
             if (Options.Downloader == null)
@@ -46,8 +46,7 @@ namespace Crawler.Pipelines
                         var href = item.GetAttributeValue("href", "");
                         if (!string.IsNullOrWhiteSpace(href))
                         {
-                            var url = UrlHelper.Content(site.Url, href);
-
+                            var url = UrlHelper.Combine(site.Url, href);
                             if (Options.UrlValidator(url))
                             {
                                 var obj = new Site(url);
@@ -66,9 +65,9 @@ namespace Crawler.Pipelines
         }
     }
 
-    public class PageFinderOptons : PipelineOptions
+    public class UrlFinderOptons : PipelineOptions
     {
-        public PageFinderOptons()
+        public UrlFinderOptons()
         {
             UrlValidator = url => true;
         }

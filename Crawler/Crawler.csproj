@@ -50,6 +50,7 @@
     <Compile Include="Crawler.cs" />
     <Compile Include="CrawlerBuilder.cs" />
     <Compile Include="CrawlerConfiguration.cs" />
+    <Compile Include="Pipelines\PipelineRunMode.cs" />
     <Compile Include="CrawlerState.cs" />
     <Compile Include="Downloader\Downloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />

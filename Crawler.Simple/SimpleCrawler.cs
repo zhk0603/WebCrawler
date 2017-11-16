@@ -53,5 +53,16 @@ namespace Crawler.Simple
                 .UseNamed("CnieltsSpider");
            return builder.Builder();
         }
+
+        public static ICrawler UrlFinderPipeline()
+        {
+            var builder = new CrawlerBuilder();
+            builder
+                .UsePipeline<UrlFinderPipeline>(new UrlFinderOptons())
+                .UseMultiThread(1)
+                .SetLogFactory(new NLoggerFactory())
+                .UseNamed("UrlFinderPipeline");
+            return builder.Builder();
+        }
     }
 }

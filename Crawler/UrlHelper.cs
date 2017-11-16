@@ -8,18 +8,19 @@ namespace Crawler
 {
     public class UrlHelper
     {
-        public static string Content(string curUrl, string path)
+        public static string Combine(string currenUrl, string absUrl)
         {
-            if (string.IsNullOrEmpty(path))
+            if (string.IsNullOrEmpty(absUrl))
             {
                 return "";
             }
-
-            if (path.StartsWith("~/") || path.StartsWith("/"))
+            if (absUrl.StartsWith("http"))
             {
-                //return _domainUrl + path;
+                return absUrl;
             }
-            return "";
+            var baseUri = new Uri(currenUrl);
+            var absoluteUri = new Uri(baseUri, absUrl);
+            return absoluteUri.ToString();
         }
     }
 }

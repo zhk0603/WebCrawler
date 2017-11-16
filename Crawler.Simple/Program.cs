@@ -18,6 +18,9 @@ namespace Crawler.Simple
 
             //SimpleCrawler.CnieltsSpider().Run();
             //Console.ReadKey();
+
+            //SimpleCrawler.UrlFinderPipeline().Run();
+            //Console.ReadKey();
         }
     }
 
@@ -38,7 +41,6 @@ namespace Crawler.Simple
             return Task.Factory.StartNew(() =>
             {
                 var node = context.Page.HtmlNode;
-                Logger.Debug(context.Page.HtmlSource);
                 var titleColl = node?.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
                 if (titleColl != null)
                     foreach (var title in titleColl)
