@@ -16,6 +16,7 @@ namespace Crawler
         private readonly IList<Site> _sites;
         private string _named;
         private int _threadNum = 1;
+        private PipelineRunMode _runMode;
 
         public CrawlerBuilder()
         {
@@ -143,6 +144,12 @@ namespace Crawler
             return this;
         }
 
+        public CrawlerBuilder UseParallelMode()
+        {
+            _runMode = PipelineRunMode.Parallel;
+            return this;
+        }
+
         public Crawler Builder()
         {
             return BuilderInternal();
@@ -154,11 +161,18 @@ namespace Crawler
             var crawler = new Crawler(_sites, StitchingPipeline()) {ThreadNum = _threadNum};
             if (!string.IsNullOrWhiteSpace(_named))
                 crawler.Name = _named;
+            crawler.RunMode = _runMode;
+
             return crawler;
         }
 
-        private IPipeline StitchingPipeline()
+        private IEnumerable<IPipeline> StitchingPipeline()
         {
+            if (_runMode == PipelineRunMode.Parallel)
+            {
+                return _pipelines;
+            }
+
             IPipeline root = null;
             IPipeline next = null;
             foreach (var pipeline in _pipelines)
@@ -173,7 +187,10 @@ namespace Crawler
                     next = pipeline;
                 }
 
-            return root ?? (root = new EmptyPipeline());
+            return new List<IPipeline>
+            {
+                root ?? (root = new EmptyPipeline())
+            };
         }
 
         private void ConvertPipeline()

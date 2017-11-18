@@ -44,6 +44,11 @@ namespace Crawler.Logger
             Write(message, null, LogLevel.Trace);
         }
 
+        public void Trace(Exception exception)
+        {
+            Write(null, exception, LogLevel.Trace);
+        }
+
         public void Trace(string message, Exception exception)
         {
             Write(message, exception, LogLevel.Trace);
@@ -52,6 +57,11 @@ namespace Crawler.Logger
         public void Debug(string message)
         {
             Write(message, null, LogLevel.Debug);
+        }
+
+        public void Debug(Exception exception)
+        {
+            Write(null, exception, LogLevel.Debug);
         }
 
         public void Debug(string message, Exception exception)
@@ -64,6 +74,11 @@ namespace Crawler.Logger
             Write(message, null, LogLevel.Info);
         }
 
+        public void Info(Exception exception)
+        {
+            Write(null, exception, LogLevel.Info);
+        }
+
         public void Info(string message, Exception exception)
         {
             Write(message, exception, LogLevel.Info);
@@ -74,6 +89,11 @@ namespace Crawler.Logger
             Write(message, null, LogLevel.Warn);
         }
 
+        public void Warn(Exception exception)
+        {
+            Write(null, exception, LogLevel.Warn);
+        }
+
         public void Warn(string message, Exception exception)
         {
             Write(message, exception, LogLevel.Warn);
@@ -82,6 +102,11 @@ namespace Crawler.Logger
         public void Error(string message)
         {
             Write(message, null, LogLevel.Error);
+        }
+
+        public void Error(Exception exception)
+        {
+            Write(null, exception, LogLevel.Error);
         }
 
         public void Error(string message, Exception exception)

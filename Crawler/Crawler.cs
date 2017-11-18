@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,9 +17,10 @@ namespace Crawler
         private readonly IDownloader _downloader;
         private DateTime _beginTime;
         private DateTime _endTime;
-        private IPipeline _pipelin;
+        private IEnumerable<IPipeline> _pipelines;
         private int _threadNum;
         private string _named;
+        private PipelineRunMode _runMode;
 
         public Crawler()
         {
@@ -26,15 +28,15 @@ namespace Crawler
             _downloader = new HttpDownloader();
         }
 
-        public Crawler(string name, IEnumerable<Site> sites, IPipeline pipeline) : this()
+        public Crawler(string name, IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines) : this()
         {
             Name = name;
             _sites = sites ?? throw new ArgumentNullException(nameof(sites));
-            _pipelin = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
+            _pipelines = pipelines ?? throw new ArgumentNullException(nameof(pipelines));
         }
 
-        public Crawler(IEnumerable<Site> sites, IPipeline pipeline) : this(Guid.NewGuid().ToString("N"), sites,
-            pipeline)
+        public Crawler(IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines) : this(Guid.NewGuid().ToString("N"), sites,
+            pipelines)
         {
         }
 
@@ -62,18 +64,29 @@ namespace Crawler
             }
         }
 
-        public CrawlerState CrawlerState { get; protected set; }
-
-        public ILogger Logger { get; protected set; }
-
-        public IPipeline Pipeline
+        public PipelineRunMode RunMode
         {
-            get => _pipelin;
+            get => _runMode;
             set
             {
                 if (CheckState(CrawlerState.Running))
                     throw new InvalidOperationException("爬虫正在运行。");
-                _pipelin = value;
+                _runMode = value;
+            }
+        }
+
+        public CrawlerState CrawlerState { get; protected set; }
+
+        public ILogger Logger { get; protected set; }
+
+        public IEnumerable<IPipeline> Pipelines
+        {
+            get => _pipelines;
+            set
+            {
+                if (CheckState(CrawlerState.Running))
+                    throw new InvalidOperationException("爬虫正在运行。");
+                _pipelines = value;
             }
         }
 
@@ -121,6 +134,8 @@ namespace Crawler
                     while (CrawlerState == CrawlerState.Running)
                     {
                         Page page = null;
+
+
                         if (_scheduler is SiteScheduler)
                         {
                             var site = (Site) _scheduler.Pop();
@@ -139,13 +154,27 @@ namespace Crawler
                             Configuration = new CrawlerConfiguration
                             {
                                 Crawler = this,
-                                Pipeline = Pipeline,
+                                Pipelines = Pipelines,
                                 StartSites = _sites,
                                 ThreadNum = _threadNum
                             }
                         };
 
-                        Pipeline.ExecuteAsync(context).GetAwaiter().GetResult();
+                        try
+                        {
+                            if (RunMode == PipelineRunMode.Parallel)
+                            {
+                                Task.WaitAll(Pipelines.Select(pipeline => pipeline.ExecuteAsync(context)).ToArray());
+                            }
+                            else
+                            {
+                                Pipelines.FirstOrDefault()?.ExecuteAsync(context).GetAwaiter().GetResult();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            Logger.Error(exception);
+                        }
                     }
                 });
             }

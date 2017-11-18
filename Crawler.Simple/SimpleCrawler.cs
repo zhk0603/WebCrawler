@@ -38,14 +38,15 @@ namespace Crawler.Simple
         {
             var builder = new CrawlerBuilder();
             builder
-                .AddSite("http://www.cnielts.com/topic/list_18_1.html")
-                .AddSite("http://www.cnielts.com/topic/list_18_2.html")
-                .AddSite("http://www.cnielts.com/topic/list_18_3.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_1.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_2.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_3.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_4.html")
                 .UsePipeline<CnieltsPipeline1>()
                 .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
                 .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = "~/",
+                    DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
                     Downloader = new HttpDownloader()
                 })
                 .UseMultiThread(3)
@@ -62,6 +63,28 @@ namespace Crawler.Simple
                 .UseMultiThread(1)
                 .SetLogFactory(new NLoggerFactory())
                 .UseNamed("UrlFinderPipeline");
+            return builder.Builder();
+        }
+
+        public static ICrawler ParallelSpider()
+        {
+            var builder = new CrawlerBuilder();
+            builder
+                .AddSite("http://www.cnielts.com/topic/list_19_1.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_2.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_3.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_4.html")
+                .UsePipeline<CnieltsPipeline1>()
+                .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
+                .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
+                {
+                    DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
+                    Downloader = new HttpDownloader()
+                })
+                .UseMultiThread(3)
+                .SetLogFactory(new NLoggerFactory())
+                .UseNamed("ParallelSpider")
+                .UseParallelMode();
             return builder.Builder();
         }
     }
