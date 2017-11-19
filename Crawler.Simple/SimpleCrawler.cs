@@ -43,7 +43,7 @@ namespace Crawler.Simple
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_4.html")
                 .UsePipeline<CnieltsPipeline1>()
-                .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
+                .UsePipeline<CnielstPipeline2>(new PipelineOptions())
                 .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
                 {
                     DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
@@ -53,6 +53,27 @@ namespace Crawler.Simple
                 .SetLogFactory(new NLoggerFactory())
                 .UseNamed("CnieltsSpider");
            return builder.Builder();
+        }
+        public static Crawler CnieltsV2Spider()
+        {
+            var builder = new CrawlerBuilder();
+            builder
+                .AddSite("http://www.cnielts.com/topic/list_19_1.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_2.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_3.html")
+                .AddSite("http://www.cnielts.com/topic/list_19_4.html")
+                .UsePipeline<Cnielts_V2.CnieltsPipeline1>(new PipelineOptions())
+                .UsePipeline<Cnielts_V2.CnielstPipeline2>(new PipelineOptions())
+                .UsePipeline<Cnielts_V2.CnielstPipeline3>(new FileDownloadOptions()
+                {
+                    DownloadDirectory = @"~/CnieltsV2Spider/",
+                    Downloader = new HttpDownloader()
+                })
+                .UseMultiThread(8)
+                .SetLogFactory(new NLoggerFactory())
+                .UseParallelMode()
+                .UseNamed("CnieltsV2Spider");
+            return builder.Builder();
         }
 
         public static ICrawler UrlFinderPipeline()
@@ -75,7 +96,7 @@ namespace Crawler.Simple
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_4.html")
                 .UsePipeline<CnieltsPipeline1>()
-                .UsePipeline<CnielstPipeline2>(new CnielstPipeline2Options(new HttpDownloader()))
+                .UsePipeline<CnielstPipeline2>(new PipelineOptions())
                 .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
                 {
                     DownloadDirectory = @"E:\学习资料\English\新概念第二册\",

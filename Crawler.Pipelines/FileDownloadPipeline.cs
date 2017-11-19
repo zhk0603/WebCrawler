@@ -100,6 +100,5 @@ namespace Crawler.Pipelines
         /// </summary>
         public string DownloadDirectory { get; set; }
 
-        public IDownloader Downloader { get; set; }
     }
 }

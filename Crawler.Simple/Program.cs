@@ -19,25 +19,11 @@ namespace Crawler.Simple
             //SimpleCrawler.CnieltsSpider().Run();
             //Console.ReadKey();
 
+            SimpleCrawler.CnieltsV2Spider().Run();
+            Console.ReadKey();
+
             //SimpleCrawler.UrlFinderPipeline().Run();
             //Console.ReadKey();
-
-            for (var index = 0; index < 3; index++)
-            {
-                Parallel.For(0, 3, new ParallelOptions
-                {
-                    MaxDegreeOfParallelism = 3
-                }, i =>
-                {
-                    //while (true)
-                    //{
-                        Console.WriteLine(Thread.CurrentThread.ManagedThreadId + "_" + i);
-                        Thread.Sleep(1000);
-                    //}
-                });
-            }
-
-            Console.ReadKey();
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Crawler.Downloader;
+using Crawler.Schedulers;
 
 namespace Crawler.Pipelines
 {
@@ -8,7 +9,7 @@ namespace Crawler.Pipelines
     {
         protected UrlFinderPipeline(UrlFinderOptons options) : base(options)
         {
-            Options.Scheduler = Scheduler.SchedulerManager.GetScheduler(nameof(UrlFinderPipeline));
+            Options.Scheduler = SchedulerManager.GetSiteScheduler(nameof(UrlFinderPipeline));
             if (Options.Downloader == null)
             {
                 Options.Downloader = new HttpDownloader();
@@ -23,17 +24,17 @@ namespace Crawler.Pipelines
             }
         }
 
-        protected override async Task<bool> ExecuteAsync(PipelineContext context)
+        protected override Task<bool> ExecuteAsync(PipelineContext context)
         {
             if (IsComplete || IsSkip)
             {
-                return true;
+                return Task.FromResult(true);
             }
 
-            var site = (Site)Options.Scheduler.Pop();
+            var site = (Site) Options.Scheduler.Pop();
             if (site == null)
             {
-                return true;
+                return Task.FromResult(true);
             }
             var page = Options.Downloader.GetPage(site);
             if (page.HttpStatusCode == 200 && page.HtmlNode != null)
@@ -61,7 +62,7 @@ namespace Crawler.Pipelines
                 Logger.Error(site.Url + "\t" + page.HtmlSource);
             }
 
-            return true;
+            return Task.FromResult(true);
         }
     }
 
@@ -73,6 +74,5 @@ namespace Crawler.Pipelines
         }
 
         public Func<string, bool> UrlValidator { get; set; }
-        public IDownloader Downloader { get; set; }
     }
 }

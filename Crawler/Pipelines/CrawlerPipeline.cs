@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
+using Crawler.Downloader;
 using Crawler.Logger;
-using Crawler.Scheduler;
+using Crawler.Schedulers;
 
 namespace Crawler.Pipelines
 {
@@ -33,8 +36,7 @@ namespace Crawler.Pipelines
             {
                 if (_next != null)
                 {
-                    Logger?.Info($"管道：【{this.Name}】已完成，直接进入下一管道。");
-                    await _next?.ExecuteAsync(context);
+                    await _next.ExecuteAsync(context);
                 }
 
                 return;
@@ -84,6 +86,7 @@ namespace Crawler.Pipelines
     public class CrawlerPipeline<TOptions> : CrawlerPipeline
         where TOptions : PipelineOptions
     {
+        private readonly Stopwatch _stopwatch;
         public CrawlerPipeline(TOptions options)
         {
             if (options == null)
@@ -93,12 +96,41 @@ namespace Crawler.Pipelines
                 options.Name = GetType().Name;
             base.Name = options.Name;
 
-            if (options.Scheduler == null)
-                options.Scheduler = new SiteScheduler();
+            if (options.Downloader == null)
+                options.Downloader = new HttpDownloader();
 
             Options = options;
+            _stopwatch = new Stopwatch();
         }
 
         public TOptions Options { get; set; }
+
+        protected override void Initialize(PipelineContext context)
+        {
+            _stopwatch.Start();
+            base.Initialize(context);
+        }
+
+        protected override async Task<bool> ExecuteAsync(PipelineContext context)
+        {
+            var result = await base.ExecuteAsync(context);
+            Thread.Sleep(Options.Sleep);
+            return result;
+        }
+
+        public override Task AfterExceute(PipelineContext context)
+        {
+            _stopwatch.Stop();
+            if (_stopwatch.ElapsedMilliseconds >= Options.WaitForComplete)
+            {
+                this.IsComplete = true;
+            }
+            else
+            {
+                _stopwatch.Start();
+            }
+
+            return base.AfterExceute(context);
+        }
     }
 }

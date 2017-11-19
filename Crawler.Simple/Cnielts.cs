@@ -52,9 +52,9 @@ namespace Crawler.Simple
         }
     }
 
-    public class CnielstPipeline2 : CrawlerPipeline<CnielstPipeline2Options>
+    public class CnielstPipeline2 : CrawlerPipeline<PipelineOptions>
     {
-        public CnielstPipeline2(CnielstPipeline2Options options) : base(options)
+        public CnielstPipeline2(PipelineOptions options) : base(options)
         {
         }
 
@@ -87,14 +87,6 @@ namespace Crawler.Simple
         }
     }
 
-    public class CnielstPipeline2Options : PipelineOptions
-    {
-        public CnielstPipeline2Options(Downloader.IDownloader downloader)
-        {
-            Downloader = downloader;
-        }
-        public Downloader.IDownloader Downloader { get; set; }
-    }
 
     public class CnielstPipeline3 : FileDownloadPipeline
     {

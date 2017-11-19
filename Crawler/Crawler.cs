@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using Crawler.Downloader;
 using Crawler.Logger;
 using Crawler.Pipelines;
-using Crawler.Scheduler;
 
 namespace Crawler
 {
     public class Crawler : ICrawler
     {
-        private readonly IScheduler _scheduler;
         private readonly IEnumerable<Site> _sites;
-        private readonly IDownloader _downloader;
         private DateTime _beginTime;
         private DateTime _endTime;
         private IEnumerable<IPipeline> _pipelines;
@@ -24,8 +21,6 @@ namespace Crawler
 
         public Crawler()
         {
-            _scheduler = new SiteScheduler();
-            _downloader = new HttpDownloader();
         }
 
         public Crawler(string name, IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines) : this()
@@ -112,9 +107,6 @@ namespace Crawler
             if (CrawlerState == CrawlerState.Running)
                 return;
 
-            foreach (var site in _sites)
-                _scheduler.Push(site);
-
             CrawlerState = CrawlerState.Running;
             _beginTime = DateTime.Now;
 
@@ -133,24 +125,16 @@ namespace Crawler
                 {
                     while (CrawlerState == CrawlerState.Running)
                     {
-                        Page page = null;
-
-
-                        if (_scheduler is SiteScheduler)
+                        if (Pipelines.All(x => x.IsComplete))
                         {
-                            var site = (Site) _scheduler.Pop();
-                            if (site == null)
-                            {
-                                CrawlerState = CrawlerState.Finished;
-                                break;
-                            }
-                            page = _downloader.GetPage(site);
+                            CrawlerState = CrawlerState.Finished;
+                            break;
                         }
 
                         var context = new PipelineContext
                         {
                             Crawler = this,
-                            Page = page,
+                            //Page = page,
                             Configuration = new CrawlerConfiguration
                             {
                                 Crawler = this,
@@ -162,18 +146,18 @@ namespace Crawler
 
                         try
                         {
-                            if (RunMode == PipelineRunMode.Parallel)
-                            {
-                                Task.WaitAll(Pipelines.Select(pipeline => pipeline.ExecuteAsync(context)).ToArray());
-                            }
-                            else
+                            if (RunMode == PipelineRunMode.Chain)
                             {
                                 Pipelines.FirstOrDefault()?.ExecuteAsync(context).GetAwaiter().GetResult();
+                            }
+                            else if(RunMode == PipelineRunMode.Parallel)
+                            {
+                                Task.WaitAny(Pipelines.Select(pipeline => pipeline.ExecuteAsync(context)).ToArray());
                             }
                         }
                         catch (Exception exception)
                         {
-                            Logger.Error(exception);
+                            Logger.Error(exception.Message);
                         }
                     }
                 });
