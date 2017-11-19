@@ -46,7 +46,7 @@ namespace Crawler.Simple
                 .UsePipeline<CnielstPipeline2>(new PipelineOptions())
                 .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = @"E:\学习资料\English\新概念第二册\1\",
+                    DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
                     Downloader = new HttpDownloader()
                 })
                 .UseMultiThread(3)
@@ -54,6 +54,7 @@ namespace Crawler.Simple
                 .UseNamed("CnieltsSpider");
            return builder.Builder();
         }
+
         public static Crawler CnieltsV2Spider()
         {
             var builder = new CrawlerBuilder();
@@ -66,10 +67,10 @@ namespace Crawler.Simple
                 .UsePipeline<Cnielts_V2.CnielstPipeline2>(new PipelineOptions())
                 .UsePipeline<Cnielts_V2.CnielstPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = @"~/CnieltsV2Spider/",
+                    DownloadDirectory = @"~/CnieltsV2Spider/2/",
                     Downloader = new HttpDownloader()
                 })
-                .UseMultiThread(8)
+                .UseMultiThread(3)
                 .SetLogFactory(new NLoggerFactory())
                 .UseParallelMode()
                 .UseNamed("CnieltsV2Spider");

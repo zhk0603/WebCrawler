@@ -34,18 +34,9 @@ namespace Crawler.Simple
             {
                 return Task.Factory.StartNew(() =>
                 {
-                    var obj = Options.Scheduler.Pop();
-
-                    if (obj == null)
+                    if (context.Site != null)
                     {
-                        IsComplete = true;
-                        return false;
-                    }
-
-                    if (obj is Site)
-                    {
-                        var site = obj as Site;
-                        var page = Options.Downloader.GetPage(site);
+                        var page = Options.Downloader.GetPage(context.Site);
                         if (page.HttpStatusCode == 200 && page.HtmlNode != null)
                         {
                             var liNodes = page.HtmlNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
@@ -66,11 +57,10 @@ namespace Crawler.Simple
                                         Url = aNode.GetAttributeValue("href", ""),
                                         Time = DateTime.Parse(time)
                                     };
-                                    //Console.WriteLine($"标题：{course.Title}\tLink:{course.Url}");
-                                    var downloadUrl = UrlHelper.Combine(site.Url, course.Url);
+                                    var downloadUrl = UrlHelper.Combine(context.Site.Url, course.Url);
                                     _downloadPageScheduler.Push(downloadUrl);
                                 }
-                                Logger.Trace(site.Url + "成功");
+                                Logger.Trace(context.Site.Url + "成功");
                             }
                         }
                     }
@@ -93,10 +83,9 @@ namespace Crawler.Simple
             {
                 return Task.Factory.StartNew(() =>
                 {
-                    var url = (string) Options.Scheduler.Pop();
-                    if (!string.IsNullOrEmpty(url))
+                    if (context.Site != null)
                     {
-                        var page = Options.Downloader.GetPage(url);
+                        var page = Options.Downloader.GetPage(context.Site);
 
                         if (page.HttpStatusCode == 200 && page.HtmlNode != null)
                         {
@@ -104,7 +93,7 @@ namespace Crawler.Simple
                             var downloadUrl = downALabelNode?.GetAttributeValue("href", "");
                             if (!string.IsNullOrEmpty(downloadUrl))
                             {
-                                Logger.Trace(url + "成功");
+                                Logger.Trace(context.Site.Url + "成功");
                                 _downloadUrlScheduler.Push(downloadUrl);
                             }
                         }
@@ -123,11 +112,10 @@ namespace Crawler.Simple
 
             protected override async Task<bool> ExecuteAsync(PipelineContext context)
             {
-                var url = (string) Options.Scheduler.Pop();
-                if (!string.IsNullOrEmpty(url))
+                if (context.Site !=null)
                 {
-                    var site = new Site(url) {ResultType = Downloader.ResultType.Byte};
-                    var page = Options.Downloader.GetPage(site);
+                    var url = context.Site.Url;
+                    var page = Options.Downloader.GetPage(context.Site);
                     await SaveAsync(page.ResultByte, url.Substring(url.LastIndexOf('/') + 1));
                     Logger.Trace(url + "成功");
                 }

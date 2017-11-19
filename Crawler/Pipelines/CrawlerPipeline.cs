@@ -54,12 +54,19 @@ namespace Crawler.Pipelines
                 }
             }
 
+            await BeforeExceute(context);
+
             if (await ExecuteAsync(context))
             {
                 if (_next != null) await _next?.ExecuteAsync(context);
             }
 
             await AfterExceute(context);
+        }
+
+        protected virtual Task BeforeExceute(PipelineContext context)
+        {
+            return Task.FromResult<object>(null);
         }
 
 
@@ -87,7 +94,7 @@ namespace Crawler.Pipelines
         where TOptions : PipelineOptions
     {
         private readonly Stopwatch _stopwatch;
-        public CrawlerPipeline(TOptions options)
+        protected CrawlerPipeline(TOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -105,17 +112,40 @@ namespace Crawler.Pipelines
 
         public TOptions Options { get; set; }
 
-        protected override void Initialize(PipelineContext context)
+        protected override async Task BeforeExceute(PipelineContext context)
         {
-            _stopwatch.Start();
-            base.Initialize(context);
+            var site = Options.Scheduler.Pop();
+            if (site == null)
+            {
+                Logger.Trace("等待中获取资源");
+                _stopwatch.Start();
+                Thread.Sleep(200);
+                _stopwatch.Stop();
+                return;
+            }
+            context.Site = OnParseSite(site);
+            await base.BeforeExceute(context);
         }
 
         protected override async Task<bool> ExecuteAsync(PipelineContext context)
         {
+            
             var result = await base.ExecuteAsync(context);
             Thread.Sleep(Options.Sleep);
             return result;
+        }
+
+        protected virtual Site OnParseSite(object site)
+        {
+            if (site is Site site1)
+            {
+                return site1;
+            }
+            if (site is string s)
+            {
+                return new Site(s);
+            }
+            return new Site();
         }
 
         public override Task AfterExceute(PipelineContext context)
