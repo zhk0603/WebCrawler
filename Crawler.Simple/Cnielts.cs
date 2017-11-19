@@ -9,44 +9,70 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Crawler.Downloader;
 using Crawler.Pipelines;
+using Crawler.Schedulers;
 
 namespace Crawler.Simple
 {
     public class CnieltsPipeline1 : CrawlerPipeline
     {
+        private readonly IScheduler _scheduler;
+        private readonly IDownloader _downloader;
+
+        public CnieltsPipeline1()
+        {
+            _scheduler = SchedulerManager.GetSiteScheduler("CnieltsPipeline1");
+            _downloader = new HttpDownloader();
+        }
+
+        protected override void Initialize(PipelineContext context)
+        {
+            foreach (var site in context.Configuration.StartSites)
+            {
+                _scheduler.Push(site);
+            }
+            base.Initialize(context);
+        }
+
         protected override Task<bool> ExecuteAsync(PipelineContext context)
         {
             return Task.Factory.StartNew(() =>
             {
-                if (context.Page.HttpStatusCode == 200 && context.Page.HtmlNode != null)
+                var site = (Site) _scheduler.Pop();
+                if (site != null)
                 {
-                    var liNodes = context.Page.HtmlNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
-                    if (liNodes != null && liNodes.Count > 0)
+                    var page = _downloader.GetPage(site);
+                    if (page.HttpStatusCode == 200 && page.HtmlNode != null)
                     {
-                        var courseColl = new List<Course>();
-                        foreach (var node in liNodes)
+                        var liNodes = page.HtmlNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
+                        if (liNodes != null && liNodes.Count > 0)
                         {
-                            var aNode = node.SelectSingleNode("a");
-                            
-                            var reg = new Regex(@"(?<time>\(.*\))");
-                            Match match = reg.Match(node.InnerText);
-                            var tiem = match.Groups["time"].Value;
-                            var time = tiem.Substring(1, tiem.Length - 2);
-
-                            var course = new Course
+                            var courseColl = new List<Course>();
+                            foreach (var node in liNodes)
                             {
-                                Title = aNode.InnerText,
-                                Url = aNode.GetAttributeValue("href",""),
-                                Time = DateTime.Parse(time)
-                            };
+                                var aNode = node.SelectSingleNode("a");
 
-                            courseColl.Add(course);
-                            Console.WriteLine($"标题：{course.Title}\tLink:{course.Url}");
+                                var reg = new Regex(@"(?<time>\(.*\))");
+                                Match match = reg.Match(node.InnerText);
+                                var tiem = match.Groups["time"].Value;
+                                var time = tiem.Substring(1, tiem.Length - 2);
+
+                                var course = new Course
+                                {
+                                    Title = aNode.InnerText,
+                                    Url = aNode.GetAttributeValue("href", ""),
+                                    Time = DateTime.Parse(time)
+                                };
+
+                                courseColl.Add(course);
+                                Console.WriteLine($"标题：{course.Title}\tLink:{course.Url}");
+                            }
+                            context.PipelineData.Add("CourseData", courseColl);
                         }
-                        context.PipelineData.Add("CourseData", courseColl);
                     }
                 }
+
                 return true;
             });
         }

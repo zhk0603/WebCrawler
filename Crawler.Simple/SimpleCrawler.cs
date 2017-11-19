@@ -46,7 +46,7 @@ namespace Crawler.Simple
                 .UsePipeline<CnielstPipeline2>(new PipelineOptions())
                 .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
+                    DownloadDirectory = @"E:\学习资料\English\新概念第二册\1\",
                     Downloader = new HttpDownloader()
                 })
                 .UseMultiThread(3)

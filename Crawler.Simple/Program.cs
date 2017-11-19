@@ -16,8 +16,8 @@ namespace Crawler.Simple
             //SimpleCrawler.CnBlog().Run();
             //Console.ReadKey();
 
-            //SimpleCrawler.CnieltsSpider().Run();
-            //Console.ReadKey();
+            SimpleCrawler.CnieltsSpider().Run();
+            Console.ReadKey();
 
             SimpleCrawler.CnieltsV2Spider().Run();
             Console.ReadKey();
