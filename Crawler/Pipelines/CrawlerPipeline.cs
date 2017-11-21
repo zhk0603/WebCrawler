@@ -19,7 +19,7 @@ namespace Crawler.Pipelines
 
         private IPipeline _next;
 
-        public ILogger Logger { get; set; }
+        protected ILogger Logger { get; }
         public virtual string Name { get; set; }
         public virtual bool IsComplete { get; set; }
         public virtual bool IsSkip { get; set; }
@@ -79,7 +79,7 @@ namespace Crawler.Pipelines
             Logger.Trace("initialize");
         }
 
-        public virtual Task AfterExceute(PipelineContext context)
+        protected virtual Task AfterExceute(PipelineContext context)
         {
             return Task.FromResult<object>(null);
         }
@@ -110,7 +110,7 @@ namespace Crawler.Pipelines
             _stopwatch = new Stopwatch();
         }
 
-        public TOptions Options { get; set; }
+        protected TOptions Options { get; }
 
         protected override async Task BeforeExceute(PipelineContext context)
         {
@@ -127,14 +127,6 @@ namespace Crawler.Pipelines
             await base.BeforeExceute(context);
         }
 
-        protected override async Task<bool> ExecuteAsync(PipelineContext context)
-        {
-            
-            var result = await base.ExecuteAsync(context);
-            Thread.Sleep(Options.Sleep);
-            return result;
-        }
-
         protected virtual Site OnParseSite(object site)
         {
             if (site is Site site1)
@@ -148,7 +140,7 @@ namespace Crawler.Pipelines
             return new Site();
         }
 
-        public override Task AfterExceute(PipelineContext context)
+        protected override Task AfterExceute(PipelineContext context)
         {
             _stopwatch.Stop();
             if (_stopwatch.ElapsedMilliseconds >= Options.WaitForComplete)
@@ -160,6 +152,7 @@ namespace Crawler.Pipelines
                 _stopwatch.Start();
             }
 
+            Thread.Sleep(Options.Sleep);
             return base.AfterExceute(context);
         }
     }

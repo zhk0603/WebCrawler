@@ -43,8 +43,8 @@ namespace Crawler.Simple
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_4.html")
                 .UsePipeline<CnieltsPipeline1>()
-                .UsePipeline<CnielstPipeline2>(new PipelineOptions())
-                .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
+                .UsePipeline<CnieltsPipeline2>(new PipelineOptions())
+                .UsePipeline<CnieltsPipeline3>(new FileDownloadOptions()
                 {
                     DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
                     Downloader = new HttpDownloader()
@@ -64,8 +64,8 @@ namespace Crawler.Simple
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_4.html")
                 .UsePipeline<Cnielts_V2.CnieltsPipeline1>(new PipelineOptions())
-                .UsePipeline<Cnielts_V2.CnielstPipeline2>(new PipelineOptions())
-                .UsePipeline<Cnielts_V2.CnielstPipeline3>(new FileDownloadOptions()
+                .UsePipeline<Cnielts_V2.CnieltsPipeline2>(new PipelineOptions())
+                .UsePipeline<Cnielts_V2.CnieltsPipeline3>(new FileDownloadOptions()
                 {
                     DownloadDirectory = @"~/CnieltsV2Spider/2/",
                     Downloader = new HttpDownloader()
@@ -97,8 +97,8 @@ namespace Crawler.Simple
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_4.html")
                 .UsePipeline<CnieltsPipeline1>()
-                .UsePipeline<CnielstPipeline2>(new PipelineOptions())
-                .UsePipeline<CnielstPipeline3>(new FileDownloadOptions()
+                .UsePipeline<CnieltsPipeline2>(new PipelineOptions())
+                .UsePipeline<CnieltsPipeline3>(new FileDownloadOptions()
                 {
                     DownloadDirectory = @"E:\学习资料\English\新概念第二册\",
                     Downloader = new HttpDownloader()

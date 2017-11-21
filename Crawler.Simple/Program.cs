@@ -53,7 +53,7 @@ namespace Crawler.Simple
             });
         }
 
-        public override Task AfterExceute(PipelineContext context)
+        protected override Task AfterExceute(PipelineContext context)
         {
             Console.WriteLine("处理管道1-结束" + context.Page.Uri);
             return Task.FromResult(0);
@@ -77,7 +77,7 @@ namespace Crawler.Simple
             return Task.FromResult(false);
         }
 
-        public override Task AfterExceute(PipelineContext context)
+        protected override Task AfterExceute(PipelineContext context)
         {
             Console.WriteLine("\t处理管道2-结束");
             return Task.FromResult(0);

@@ -69,11 +69,11 @@ namespace Crawler.Simple
             }
         }
 
-        public class CnielstPipeline2 : CrawlerPipeline<PipelineOptions>
+        public class CnieltsPipeline2 : CrawlerPipeline<PipelineOptions>
         {
             private readonly IScheduler _downloadUrlScheduler;
 
-            public CnielstPipeline2(PipelineOptions options) : base(options)
+            public CnieltsPipeline2(PipelineOptions options) : base(options)
             {
                 _downloadUrlScheduler = SchedulerManager.GetScheduler<Scheduler<string>>("downloadUrlScheduler");
                 Options.Scheduler = SchedulerManager.GetScheduler<Scheduler<string>>("downloadPageScheduler");
@@ -103,9 +103,9 @@ namespace Crawler.Simple
             }
         }
 
-        public class CnielstPipeline3 : FileDownloadPipeline
+        public class CnieltsPipeline3 : FileDownloadPipeline
         {
-            public CnielstPipeline3(FileDownloadOptions options) : base(options)
+            public CnieltsPipeline3(FileDownloadOptions options) : base(options)
             {
                 Options.Scheduler = SchedulerManager.GetScheduler<Scheduler<string>>("downloadUrlScheduler");
             }
@@ -120,6 +120,13 @@ namespace Crawler.Simple
                     Logger.Trace(url + "成功");
                 }
                 return false;
+            }
+            protected override Site OnParseSite(object site)
+            {
+                return new Site(site.ToString())
+                {
+                    ResultType = Downloader.ResultType.Byte
+                };
             }
         }
     }

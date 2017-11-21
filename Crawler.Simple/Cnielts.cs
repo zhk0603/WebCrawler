@@ -78,9 +78,9 @@ namespace Crawler.Simple
         }
     }
 
-    public class CnielstPipeline2 : CrawlerPipeline<PipelineOptions>
+    public class CnieltsPipeline2 : CrawlerPipeline<PipelineOptions>
     {
-        public CnielstPipeline2(PipelineOptions options) : base(options)
+        public CnieltsPipeline2(PipelineOptions options) : base(options)
         {
         }
 
@@ -114,9 +114,9 @@ namespace Crawler.Simple
     }
 
 
-    public class CnielstPipeline3 : FileDownloadPipeline
+    public class CnieltsPipeline3 : FileDownloadPipeline
     {
-        public CnielstPipeline3(FileDownloadOptions options) : base(options)
+        public CnieltsPipeline3(FileDownloadOptions options) : base(options)
         {
         }
 

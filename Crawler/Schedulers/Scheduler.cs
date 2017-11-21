@@ -47,7 +47,7 @@ namespace Crawler.Schedulers
             try
             {
                 if (@object is T requestObject)
-                    _stack.Add(requestObject);
+                    Push(requestObject);
             }
             finally
             {
