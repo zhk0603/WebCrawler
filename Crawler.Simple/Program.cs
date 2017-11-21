@@ -34,11 +34,18 @@ namespace Crawler.Simple
     {
         public Pipeline1(PipelineOptions options) : base(options)
         {
+            Options.Scheduler = Schedulers.SchedulerManager.GetSiteScheduler("Pipeline1");
         }
 
         protected override void Initialize(PipelineContext context)
         {
             Console.WriteLine("处理管道1-开始");
+
+            foreach (var site in context.Configuration.StartSites)
+            {
+                Options.Scheduler.Push(site);
+            }
+
             base.Initialize(context);
         }
 
@@ -46,6 +53,7 @@ namespace Crawler.Simple
         {
             return Task.Factory.StartNew(() =>
             {
+                context.Page = Options.Downloader.GetPage(context.Site);
                 var node = context.Page.HtmlNode;
                 var titleColl = node?.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
                 if (titleColl != null)
@@ -59,7 +67,7 @@ namespace Crawler.Simple
         protected override Task AfterExceute(PipelineContext context)
         {
             Console.WriteLine("处理管道1-结束" + context.Page.Uri);
-            return Task.FromResult(0);
+            return base.AfterExceute(context);
         }
     }
 
