@@ -22,7 +22,10 @@ namespace Crawler.Simple
             //SimpleCrawler.CnieltsV2Spider().Run();
             //Console.ReadKey();
 
-            SimpleCrawler.UrlFinderPipeline().Run();
+            //SimpleCrawler.UrlFinderPipeline().Run();
+            //Console.ReadKey();
+
+            SimpleCrawler.CrawlerFullSite().Run();
             Console.ReadKey();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
@@ -74,12 +75,17 @@ namespace Crawler.Pipelines
 
         protected override async Task<bool> ExecuteAsync(PipelineContext context)
         {
-            await SaveAsync(context.Page.ResultByte,context.Page.Cookie);
+            await SaveAsync(context.Page.ResultByte, Guid.NewGuid().ToString("N") + ".tmp");
             return true;
         }
 
         protected virtual async Task SaveAsync(byte[] bytes, string fileName)
         {
+            if (bytes == null || bytes.Length == 0)
+            {
+                return;
+            }
+
             var savePath = _path + fileName;
             if (!File.Exists(savePath))
             {
@@ -95,6 +101,21 @@ namespace Crawler.Pipelines
 
     public class FileDownloadOptions : PipelineOptions
     {
+        public FileDownloadOptions() : this("~/Downloads")
+        {
+            
+        }
+
+        public FileDownloadOptions(string downloadPath)
+        {
+            if (string.IsNullOrEmpty(downloadPath))
+            {
+                throw new System.ArgumentNullException(nameof(downloadPath));
+            }
+
+            this.DownloadDirectory = downloadPath;
+        }
+        
         /// <summary>
         ///     文件保存路径，支持绝对路径与相对路径，相对路径以当前程序运行目录为起点。
         /// </summary>

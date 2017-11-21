@@ -76,14 +76,32 @@ namespace Crawler.Simple
         public static ICrawler UrlFinderPipeline()
         {
             CrawlerBuilder.Current
-                //.AddSite("https://www.yezismile.com")
+                .AddSite("https://www.yezismile.com")
                 .UsePipeline<UrlFinderPipeline>(new UrlFinderOptons()
                 {
                     WaitForComplete = 5000,
                     UrlValidator = url => url.Contains("www.yezismile.com"),
                     Sleep = 200
                 })
-                .UseMultiThread(5)
+                .UseMultiThread(10)
+                .SetLogFactory(new NLoggerFactory())
+                .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
+                .UseNamed("UrlFinderPipeline");
+            return CrawlerBuilder.Current.Builder();
+        }
+
+        public static ICrawler CrawlerFullSite()
+        {
+            CrawlerBuilder.Current
+                .AddSite("https://www.yezismile.com")
+                .UsePipeline<Yezismile.YezismileUrlFinderPipeline>(new UrlFinderOptons()
+                {
+                    WaitForComplete = 10000,
+                    UrlValidator = url => url.Contains("www.yezismile.com"),
+                    Sleep = 200
+                })
+                .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Yezismile"))
+                .UseMultiThread(8)
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
                 .UseNamed("UrlFinderPipeline");

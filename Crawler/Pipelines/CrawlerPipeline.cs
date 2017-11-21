@@ -115,19 +115,23 @@ namespace Crawler.Pipelines
 
         protected override async Task BeforeExceute(PipelineContext context)
         {
-            var site = Options.Scheduler.Pop();
-            if (site == null)
+            if (Options.Scheduler != null)
             {
-                lock (_swLock)
+                var site = Options.Scheduler.Pop();
+                if (site == null)
                 {
-                    Logger.Trace("等待获取资源中……");
-                    _stopwatch.Start();
-                    Thread.Sleep(200);
-                    _stopwatch.Stop();
-                    return;
+                    lock (_swLock)
+                    {
+                        Logger.Trace("等待获取资源中……");
+                        _stopwatch.Start();
+                        Thread.Sleep(200);
+                        _stopwatch.Stop();
+                        return;
+                    }
                 }
+                context.Site = OnParseSite(site);
             }
-            context.Site = OnParseSite(site);
+            
             await base.BeforeExceute(context);
         }
 
