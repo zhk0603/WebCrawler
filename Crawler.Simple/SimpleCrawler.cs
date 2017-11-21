@@ -11,6 +11,7 @@ namespace Crawler.Simple
 {
     class SimpleCrawler
     {
+        // 多个入口链接，管道链模式
         public static Crawler CnBlog()
         {
             var sites = new List<Site>();
@@ -73,6 +74,7 @@ namespace Crawler.Simple
             return CrawlerBuilder.Current.Builder();
         }
 
+        // 爬取整站页面。
         public static ICrawler UrlFinderPipeline()
         {
             CrawlerBuilder.Current
@@ -90,6 +92,7 @@ namespace Crawler.Simple
             return CrawlerBuilder.Current.Builder();
         }
 
+        // 爬取整站页面，并保存。
         public static ICrawler CrawlerFullSite()
         {
             CrawlerBuilder.Current
@@ -104,10 +107,11 @@ namespace Crawler.Simple
                 .UseMultiThread(8)
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
-                .UseNamed("UrlFinderPipeline");
+                .UseNamed("CrawlerFullSite");
             return CrawlerBuilder.Current.Builder();
         }
 
+        // 多管道 并行模式下载资料。
         public static ICrawler ParallelSpider()
         {
             CrawlerBuilder.Current
