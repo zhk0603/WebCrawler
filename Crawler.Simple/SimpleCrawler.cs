@@ -13,8 +13,6 @@ namespace Crawler.Simple
     {
         public static Crawler CnBlog()
         {
-            var builder = new CrawlerBuilder();
-
             var sites = new List<Site>();
             for (var i = 1; i <= 5; i++)
                 sites.Add(new Site
@@ -22,7 +20,7 @@ namespace Crawler.Simple
                     Url = $"https://news.cnblogs.com/n/page/{i}/"
                 });
 
-            builder
+            CrawlerBuilder.Current
                 .AddSiteRange(sites)
                 .SetLogFactory(new NLoggerFactory())
                 .UsePipeline(typeof(Pipeline1), new PipelineOptions())
@@ -31,13 +29,12 @@ namespace Crawler.Simple
                 .UseMultiThread(5)
                 .UseNamed("Simple Crawler");
 
-            return builder.Builder();
+            return CrawlerBuilder.Current.Builder();
         }
 
         public static Crawler CnieltsSpider()
         {
-            var builder = new CrawlerBuilder();
-            builder
+            CrawlerBuilder.Current
                 .AddSite("http://www.cnielts.com/topic/list_19_1.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_2.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
@@ -52,13 +49,12 @@ namespace Crawler.Simple
                 .UseMultiThread(3)
                 .SetLogFactory(new NLoggerFactory())
                 .UseNamed("CnieltsSpider");
-           return builder.Builder();
+            return CrawlerBuilder.Current.Builder();
         }
 
         public static Crawler CnieltsV2Spider()
         {
-            var builder = new CrawlerBuilder();
-            builder
+            CrawlerBuilder.Current
                 .AddSite("http://www.cnielts.com/topic/list_19_1.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_2.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
@@ -67,31 +63,36 @@ namespace Crawler.Simple
                 .UsePipeline<Cnielts_V2.CnieltsPipeline2>(new PipelineOptions())
                 .UsePipeline<Cnielts_V2.CnieltsPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = @"~/CnieltsV2Spider/2/",
+                    DownloadDirectory = @"~/CnieltsV2Spider/",
                     Downloader = new HttpDownloader()
                 })
                 .UseMultiThread(3)
                 .SetLogFactory(new NLoggerFactory())
                 .UseParallelMode()
                 .UseNamed("CnieltsV2Spider");
-            return builder.Builder();
+            return CrawlerBuilder.Current.Builder();
         }
 
         public static ICrawler UrlFinderPipeline()
         {
-            var builder = new CrawlerBuilder();
-            builder
-                .UsePipeline<UrlFinderPipeline>(new UrlFinderOptons())
-                .UseMultiThread(1)
+            CrawlerBuilder.Current
+                //.AddSite("https://www.yezismile.com")
+                .UsePipeline<UrlFinderPipeline>(new UrlFinderOptons()
+                {
+                    WaitForComplete = 5000,
+                    UrlValidator = url => url.Contains("www.yezismile.com"),
+                    Sleep = 200
+                })
+                .UseMultiThread(5)
                 .SetLogFactory(new NLoggerFactory())
+                .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
                 .UseNamed("UrlFinderPipeline");
-            return builder.Builder();
+            return CrawlerBuilder.Current.Builder();
         }
 
         public static ICrawler ParallelSpider()
         {
-            var builder = new CrawlerBuilder();
-            builder
+            CrawlerBuilder.Current
                 .AddSite("http://www.cnielts.com/topic/list_19_1.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_2.html")
                 .AddSite("http://www.cnielts.com/topic/list_19_3.html")
@@ -107,7 +108,7 @@ namespace Crawler.Simple
                 .SetLogFactory(new NLoggerFactory())
                 .UseNamed("ParallelSpider")
                 .UseParallelMode();
-            return builder.Builder();
+            return CrawlerBuilder.Current.Builder();
         }
     }
 }

@@ -5,7 +5,6 @@ namespace Crawler.Schedulers
 {
     public class SchedulerManager
     {
-
         private static readonly Dictionary<string, Dictionary<string, IScheduler>> ScheduleContainer;
         private static readonly object Lock = new object();
 
@@ -67,5 +66,6 @@ namespace Crawler.Schedulers
             }
             return scheduler;
         }
+
     }
 }

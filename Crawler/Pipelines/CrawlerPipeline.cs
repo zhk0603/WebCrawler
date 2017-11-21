@@ -94,6 +94,7 @@ namespace Crawler.Pipelines
         where TOptions : PipelineOptions
     {
         private readonly Stopwatch _stopwatch;
+        private readonly object _swLock = new object();
         protected CrawlerPipeline(TOptions options)
         {
             if (options == null)
@@ -117,11 +118,14 @@ namespace Crawler.Pipelines
             var site = Options.Scheduler.Pop();
             if (site == null)
             {
-                Logger.Trace("等待中获取资源");
-                _stopwatch.Start();
-                Thread.Sleep(200);
-                _stopwatch.Stop();
-                return;
+                lock (_swLock)
+                {
+                    Logger.Trace("等待获取资源中……");
+                    _stopwatch.Start();
+                    Thread.Sleep(200);
+                    _stopwatch.Stop();
+                    return;
+                }
             }
             context.Site = OnParseSite(site);
             await base.BeforeExceute(context);
@@ -142,14 +146,9 @@ namespace Crawler.Pipelines
 
         protected override Task AfterExceute(PipelineContext context)
         {
-            _stopwatch.Stop();
             if (_stopwatch.ElapsedMilliseconds >= Options.WaitForComplete)
             {
                 this.IsComplete = true;
-            }
-            else
-            {
-                _stopwatch.Start();
             }
 
             Thread.Sleep(Options.Sleep);

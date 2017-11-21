@@ -177,6 +177,10 @@ namespace Crawler
         ///     设置或获取Post参数编码,默认的为Default编码
         /// </summary>
         public Encoding PostEncoding { get; set; }
-    }
 
+        public override string ToString()
+        {
+            return Url;
+        }
+    }
 }

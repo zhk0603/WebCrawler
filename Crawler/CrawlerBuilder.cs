@@ -11,6 +11,7 @@ namespace Crawler
 {
     public class CrawlerBuilder
     {
+        private static readonly CrawlerBuilder _builder = new CrawlerBuilder();
         private readonly IList<IPipeline> _pipelines;
         private readonly IList<Tuple<Delegate, object[]>> _pipelineTuples;
         private readonly IList<Site> _sites;
@@ -27,6 +28,8 @@ namespace Crawler
 
             Properties[Constants.CrawlerVersionKey] = Assembly.GetExecutingAssembly().GetName().Version.ToString();
         }
+
+        public static CrawlerBuilder Current => _builder;
 
         public Dictionary<string, object> Properties { get; }
 
@@ -147,6 +150,18 @@ namespace Crawler
         public CrawlerBuilder UseParallelMode()
         {
             _runMode = PipelineRunMode.Parallel;
+            return this;
+        }
+
+        public CrawlerBuilder UseBloomFilter(int bitSize, int setSize)
+        {
+            UrlFilterManager.SetUrlFilter(new BloomFilter(bitSize, setSize));
+            return this;
+        }
+
+        public CrawlerBuilder UseBloomFilter(int bitSize, int setSize, int numberOfHashes)
+        {
+            UrlFilterManager.SetUrlFilter(new BloomFilter(bitSize, setSize, numberOfHashes));
             return this;
         }
 

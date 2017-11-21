@@ -46,10 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BloomFilter.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Crawler.cs" />
     <Compile Include="CrawlerBuilder.cs" />
     <Compile Include="CrawlerConfiguration.cs" />
+    <Compile Include="IUrlFilter.cs" />
     <Compile Include="Pipelines\PipelineRunMode.cs" />
     <Compile Include="CrawlerState.cs" />
     <Compile Include="Downloader\Downloader.cs" />
@@ -62,7 +64,6 @@
     <Compile Include="Pipelines\PipelineData.cs" />
     <Compile Include="Schedulers\IScheduler.cs" />
     <Compile Include="Logger\ILogger.cs" />
-    <Compile Include="BaseContext.cs" />
     <Compile Include="Logger\NLogger.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="Pipelines\CrawlerPipeline.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Schedulers\SiteScheduler.cs" />
     <Compile Include="Schedulers\Scheduler.cs" />
     <Compile Include="Site.cs" />
+    <Compile Include="UrlFilterManager.cs" />
     <Compile Include="UrlHelper.cs" />
   </ItemGroup>
   <ItemGroup>

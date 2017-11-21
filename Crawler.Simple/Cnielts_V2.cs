@@ -39,6 +39,7 @@ namespace Crawler.Simple
                         var page = Options.Downloader.GetPage(context.Site);
                         if (page.HttpStatusCode == 200 && page.HtmlNode != null)
                         {
+                            context.Page = page;
                             var liNodes = page.HtmlNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
                             if (liNodes != null && liNodes.Count > 0)
                             {

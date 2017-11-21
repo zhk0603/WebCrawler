@@ -7,13 +7,10 @@ namespace Crawler.Pipelines
 {
     public class UrlFinderPipeline : CrawlerPipeline<UrlFinderOptons>
     {
-        protected UrlFinderPipeline(UrlFinderOptons options) : base(options)
+        public UrlFinderPipeline(UrlFinderOptons options) : base(options)
         {
-            Options.Scheduler = SchedulerManager.GetSiteScheduler(nameof(UrlFinderPipeline));
-            if (Options.Downloader == null)
-            {
-                Options.Downloader = new HttpDownloader();
-            }
+            if(Options.Scheduler == null)
+                Options.Scheduler = SchedulerManager.GetSiteScheduler(nameof(UrlFinderPipeline));
         }
 
         protected override void Initialize(PipelineContext context)
@@ -31,7 +28,7 @@ namespace Crawler.Pipelines
                 return Task.FromResult(true);
             }
 
-            var site = (Site) Options.Scheduler.Pop();
+            var site = context.Site;
             if (site == null)
             {
                 return Task.FromResult(true);
@@ -39,6 +36,7 @@ namespace Crawler.Pipelines
             var page = Options.Downloader.GetPage(site);
             if (page.HttpStatusCode == 200 && page.HtmlNode != null)
             {
+                context.Page = page;
                 var aNodes = page.HtmlNode.SelectNodes("//a");
                 if (aNodes != null && aNodes.Count > 0)
                 {
@@ -61,7 +59,8 @@ namespace Crawler.Pipelines
             {
                 Logger.Error(site.Url + "\t" + page.HtmlSource);
             }
-
+            Logger.Trace("待爬取页面数量：" + Options.Scheduler.Count);
+            Logger.Trace("页面总数：" + UrlFilterManager.Current.Count);
             return Task.FromResult(true);
         }
     }

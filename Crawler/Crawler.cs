@@ -152,7 +152,7 @@ namespace Crawler
                             }
                             else if(RunMode == PipelineRunMode.Parallel)
                             {
-                                Task.WaitAll(Pipelines.Select(pipeline =>
+                                Task.WaitAny(Pipelines.Select(pipeline =>
                                     pipeline.ExecuteAsync((PipelineContext) context.Clone())).ToArray());
                             }
                         }

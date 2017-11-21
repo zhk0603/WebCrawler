@@ -19,11 +19,11 @@ namespace Crawler.Simple
             //SimpleCrawler.CnieltsSpider().Run();
             //Console.ReadKey();
 
-            SimpleCrawler.CnieltsV2Spider().Run();
-            Console.ReadKey();
-
-            //SimpleCrawler.UrlFinderPipeline().Run();
+            //SimpleCrawler.CnieltsV2Spider().Run();
             //Console.ReadKey();
+
+            SimpleCrawler.UrlFinderPipeline().Run();
+            Console.ReadKey();
         }
     }
 
