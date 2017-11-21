@@ -75,7 +75,8 @@ namespace Crawler.Pipelines
 
         protected override async Task<bool> ExecuteAsync(PipelineContext context)
         {
-            await SaveAsync(context.Page.ResultByte, Guid.NewGuid().ToString("N") + ".tmp");
+            if(context.Page != null)
+                await SaveAsync(context.Page.ResultByte, Guid.NewGuid().ToString("N") + ".tmp");
             return true;
         }
 

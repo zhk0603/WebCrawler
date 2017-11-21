@@ -116,9 +116,10 @@ namespace Crawler.Simple
                     Sleep = 200
                 })
                 .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Yezismile/2"))
-                .UseMultiThread(8)
+                .UseMultiThread(1)
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
+                .UseParallelMode()
                 .UseNamed("CrawlerFullSite");
             return CrawlerBuilder.Current.Builder();
         }
