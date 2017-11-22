@@ -23,7 +23,7 @@ namespace Crawler
         {
         }
 
-        public Crawler(string name, IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines) : this()
+        public Crawler(string name, IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines)
         {
             Name = name;
             _sites = sites ?? throw new ArgumentNullException(nameof(sites));
@@ -134,7 +134,6 @@ namespace Crawler
                         var context = new PipelineContext
                         {
                             Crawler = this,
-                            //Page = page,
                             Configuration = new CrawlerConfiguration
                             {
                                 Crawler = this,

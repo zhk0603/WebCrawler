@@ -108,19 +108,31 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearPipelines();
             CrawlerBuilder.Current.ClearSites();
             CrawlerBuilder.Current
-                .AddSite("https://www.yezismile.com")
+                .AddSite("http://cuiqingcai.com/")
                 .UsePipeline<Yezismile.YezismileUrlFinderPipeline>(new UrlFinderOptons()
                 {
                     WaitForComplete = 10000,
-                    UrlValidator = url => url.Contains("www.yezismile.com"),
-                    Sleep = 200
+                    UrlValidator = url => url.Contains("cuiqingcai.com"),
+                    Sleep = 500
                 })
-                .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Yezismile/2"))
-                .UseMultiThread(1)
+                .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Cuiqingcai/"))
+                .UseMultiThread(5)
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
-                .UseParallelMode()
                 .UseNamed("CrawlerFullSite");
+            return CrawlerBuilder.Current.Builder();
+        }
+
+        public static ICrawler CnBlogsCrawler()
+        {
+            CrawlerBuilder.Current.ClearPipelines();
+            CrawlerBuilder.Current.ClearSites();
+
+            CrawlerBuilder.Current
+                .AddSite("https://home.cnblogs.com/u/cyq1162")
+                .UsePipeline(typeof(CnBlogs.UserInfoPipeline), new PipelineOptions(){ WaitForComplete=500 })
+                .SetLogFactory(new NLoggerFactory());
+
             return CrawlerBuilder.Current.Builder();
         }
     }

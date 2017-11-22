@@ -54,7 +54,7 @@
     <Compile Include="IUrlFilter.cs" />
     <Compile Include="Pipelines\PipelineRunMode.cs" />
     <Compile Include="CrawlerState.cs" />
-    <Compile Include="Downloader\Downloader.cs" />
+    <Compile Include="Downloader\HttpDownloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />
     <Compile Include="ICrawler.cs" />
     <Compile Include="Logger\ILoggerFactory.cs" />

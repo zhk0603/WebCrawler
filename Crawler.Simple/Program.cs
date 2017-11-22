@@ -25,8 +25,12 @@ namespace Crawler.Simple
             //SimpleCrawler.UrlFinderPipeline().Run();
             //Console.ReadKey();
 
-            SimpleCrawler.CrawlerFullSite().Run();
+            //SimpleCrawler.CrawlerFullSite().Run();
+            //Console.ReadKey();
+
+            SimpleCrawler.CnBlogsCrawler().Run();
             Console.ReadKey();
+
         }
     }
 

@@ -12,6 +12,7 @@ namespace Crawler.Pipelines
     {
         private bool _initializen;
         private readonly object _initLock = new object();
+
         public CrawlerPipeline()
         {
             Logger = LoggerManager.GetLogger(GetType());
@@ -95,7 +96,8 @@ namespace Crawler.Pipelines
     {
         private readonly Stopwatch _stopwatch;
         private readonly object _swLock = new object();
-        protected CrawlerPipeline(TOptions options)
+
+        public CrawlerPipeline(TOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -131,17 +133,17 @@ namespace Crawler.Pipelines
                 }
                 context.Site = OnParseSite(site);
             }
-            
+
             await base.BeforeExceute(context);
         }
 
-        protected virtual Site OnParseSite(object site)
+        protected virtual Site OnParseSite(object item)
         {
-            if (site is Site site1)
+            if (item is Site site)
             {
-                return site1;
+                return site;
             }
-            if (site is string s)
+            if (item is string s)
             {
                 return new Site(s);
             }

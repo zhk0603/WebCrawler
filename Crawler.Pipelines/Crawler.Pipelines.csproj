@@ -43,7 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExcelPipeline.cs" />
     <Compile Include="FileDownloadPipeline.cs" />
+    <Compile Include="FlipperPipeline.cs" />
     <Compile Include="UrlFinderPipeline.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
