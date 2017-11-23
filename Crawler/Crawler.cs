@@ -157,7 +157,7 @@ namespace Crawler
                         }
                         catch (Exception exception)
                         {
-                            Logger.Error(exception.Message);
+                            Logger.Error(exception.Message, exception);
                         }
                     }
                 });

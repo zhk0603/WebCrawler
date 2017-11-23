@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,18 +24,23 @@ namespace Crawler.Simple
         private static readonly string _contentType = "application/json; charset=UTF-8";
         private static ulong _count = 0;
 
-        public class UserInfoPipeline : CrawlerPipeline<CnBlogsOptions>
+        public class SaveUserInfoPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _followFansScheduler;
-            private readonly Schedulers.IScheduler _exportScheduler;
+            private readonly Schedulers.IScheduler _sqlScheduler;
 
-            public UserInfoPipeline(CnBlogsOptions options) : base(options)
+            private readonly SqlConnection _conn;
+
+            public SaveUserInfoPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler = Schedulers.SchedulerManager.GetSiteScheduler("CnBlogs");
                 _followFansScheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
-                _exportScheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<UserInfo>>("exportScheduler");
+                _sqlScheduler =
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<UserInfo>>("sqlScheduler");
+
+                _conn = new SqlConnection(Options.ConnStr);
+                _conn.Open();
             }
 
             protected override void Initialize(PipelineContext context)
@@ -173,7 +179,7 @@ namespace Crawler.Simple
                         #endregion
 
                         // 将用户信息推入导出调度器。
-                        _exportScheduler.Push(user);
+                        SaveToDb(user);
 
                         Logger.Trace("总人数：" + (++_count)); // 不太准确的统计。
                     }
@@ -181,6 +187,99 @@ namespace Crawler.Simple
 
                 return base.ExecuteAsync(context);
             }
+
+            void SaveToDb(UserInfo userInfo)
+            {
+                var sql = @"INSERT INTO t_cnblogs.dbo.UserInfo
+ (
+     UserId,
+     NickName,
+     UserName,
+     Sex,
+     Birthday,
+     Province,
+     District,
+     CurProvince,
+     CurDistrict,
+     MarriageState,
+     JobTitle,
+     WorkUnit,
+     JobState,
+     Interest,
+     RecentGoals,
+     Motto,
+     SelfIntroduction,
+     JoinTime,
+     BlogUrl,
+     FollowingCount,
+     FollowerCount,
+     AvatarUrl
+ )
+ VALUES
+ (
+     @UserId,
+     @NickName,
+     @UserName,
+     @Sex,
+     @Birthday,
+     @Province,
+     @District,
+     @CurProvince,
+     @CurDistrict,
+     @MarriageState,
+     @JobTitle,
+     @WorkUnit,
+     @JobState,
+     @Interest,
+     @RecentGoals,
+     @Motto,
+     @SelfIntroduction,
+     @JoinTime,
+     @BlogUrl,
+     @FollowingCount,
+     @FollowerCount,
+     @AvatarUrl
+ );";
+                using (var cmd = new SqlCommand(sql, _conn))
+                {
+                    AddParameters(cmd,"@UserId", userInfo.UserId);
+                    AddParameters(cmd,"@NickName", userInfo.NickName);
+                    AddParameters(cmd,"@UserName", userInfo.UserName);
+                    AddParameters(cmd,"@Sex", userInfo.Sex);
+                    AddParameters(cmd,"@Birthday", userInfo.Birthday);
+                    AddParameters(cmd,"@Province", userInfo.Province);
+                    AddParameters(cmd,"@District", userInfo.District);
+                    AddParameters(cmd,"@CurProvince", userInfo.CurProvince);
+                    AddParameters(cmd,"@CurDistrict", userInfo.CurDistrict);
+                    AddParameters(cmd,"@MarriageState", userInfo.MarriageState);
+                    AddParameters(cmd,"@JobTitle", userInfo.JobTitle);
+                    AddParameters(cmd,"@WorkUnit", userInfo.WorkUnit);
+                    AddParameters(cmd,"@JobState", userInfo.JobState);
+                    AddParameters(cmd,"@Interest", userInfo.Interest);
+                    AddParameters(cmd,"@RecentGoals", userInfo.RecentGoals);
+                    AddParameters(cmd,"@Motto", userInfo.Motto);
+                    AddParameters(cmd,"@SelfIntroduction", userInfo.SelfIntroduction);
+                    AddParameters(cmd,"@JoinTime", userInfo.JoinTime);
+                    AddParameters(cmd,"@BlogUrl", userInfo.BlogUrl);
+                    AddParameters(cmd,"@FollowingCount", userInfo.FollowingCount);
+                    AddParameters(cmd,"@FollowerCount", userInfo.FollowerCount);
+                    AddParameters(cmd,"@AvatarUrl", userInfo.AvatarUrl);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error(e.Message, e);
+                    }
+                }
+            }
+        }
+
+        static void AddParameters(SqlCommand cmd, string parameterName, object value)
+        {
+            cmd.Parameters.AddWithValue(parameterName, value ?? DBNull.Value);
         }
 
         // 从用户关注的人/粉丝中获取种子
@@ -201,73 +300,19 @@ namespace Crawler.Simple
                 if (context.Site != null)
                 {
                     var userId = Guid.Parse(context.Site.Url);
-                    await AnalysisFollow(userId);
-                    await AnalysisFans(userId);
+                    Analysis(userId, true);
+                    Analysis(userId, false);
                 }
                 return true;
             }
 
-            Task AnalysisFollow(Guid userId, int pageIndex = 1)
+            void Analysis(Guid userId, bool isFollowes)
             {
                 var site = new Site(_relationUserApi)
                 {
                     Cookie = Options.Cookie,
                     Postdata =
-                        $"{{\"uid\":\"{userId}\",\"groupId\":\"00000000-0000-0000-0000-000000000000\",\"page\":{pageIndex},\"isFollowes\":true}}",
-                    Method = _method,
-                    Accept = _accept,
-                    ContentType = _contentType
-                };
-
-                var page = Options.Downloader.GetPage(site);
-                if (page.HttpStatusCode == 200)
-                {
-                    var result = Newtonsoft.Json.JsonConvert.DeserializeObject<PagerObj>(page.HtmlSource);
-                    if (!string.IsNullOrEmpty(result.Pager))
-                    {
-                        var doc = new HtmlDocument();
-                        doc.LoadHtml(result.Pager);
-                        var pageNode = doc.DocumentNode;
-                        var aNodes = pageNode.SelectNodes("//a");
-
-                        if (aNodes != null)
-                        {
-                            // 倒数第二个a标签为总页数。
-                            var totalPageCountNode = aNodes[aNodes.Count - 2];
-                            var totalPageCount = int.Parse(totalPageCountNode.InnerText);
-                            for (var i = totalPageCount; i > 0; i--)
-                            {
-                                // 交给 PostUserListPipeline 去获取用户的关注列表数据。
-                                _requestItemScheduler.Push(new RequestItem
-                                {
-                                    UserId = userId,
-                                    Page = i,
-                                    IsFollowes = true
-                                });
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _requestItemScheduler.Push(new RequestItem
-                        {
-                            UserId = userId,
-                            Page = 1,
-                            IsFollowes = true
-                        });
-                    }
-                }
-
-                return Task.FromResult<object>(null);
-            }
-
-            Task AnalysisFans(Guid userId, int pageIndex = 1)
-            {
-                var site = new Site(_relationUserApi)
-                {
-                    Cookie = Options.Cookie,
-                    Postdata =
-                        $"{{\"uid\":\"{userId}\",\"groupId\":\"00000000-0000-0000-0000-000000000000\",\"page\":{pageIndex},\"isFollowes\":false}}",
+                        $"{{\"uid\":\"{userId}\",\"groupId\":\"00000000-0000-0000-0000-000000000000\",\"page\":1,\"isFollowes\":{isFollowes.ToString().ToLower()}}}",
                     Method = _method,
                     Accept = _accept,
                     ContentType = _contentType
@@ -296,7 +341,7 @@ namespace Crawler.Simple
                                 {
                                     UserId = userId,
                                     Page = i,
-                                    IsFollowes = false
+                                    IsFollowes = isFollowes
                                 });
                             }
                         }
@@ -311,7 +356,6 @@ namespace Crawler.Simple
                         });
                     }
                 }
-                return Task.FromResult<object>(null);
             }
         }
 
@@ -364,6 +408,7 @@ namespace Crawler.Simple
         public class CnBlogsOptions : PipelineOptions
         {
             public string Cookie { get; set; }
+            public string ConnStr { get; set; }
         }
 
         // 用户基本信息实体。

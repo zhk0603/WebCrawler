@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Crawler.Pipelines
 {
-    public class ExcelPipeline<TEntity> : CrawlerPipeline<ExcelPipelineOptions<TEntity>>
+    public class ExcelPipeline<TEntity> : CrawlerPipeline<ExcelPipelineOptions>
     {
         private readonly List<TEntity> _cacheList1;
         private readonly List<TEntity> _cacheList2;
 
-        protected ExcelPipeline(ExcelPipelineOptions<TEntity> options) : base(options)
+        protected ExcelPipeline(ExcelPipelineOptions options) : base(options)
         {
             _cacheList1 = new List<TEntity>();
             _cacheList2 = new List<TEntity>();
         }
     }
 
-    public class ExcelPipelineOptions<TEntity> : PipelineOptions
+    public class ExcelPipelineOptions : PipelineOptions
     {
         /// <summary>
         ///     数据块大小。分块保存到excel文件中。
