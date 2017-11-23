@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Crawler.Downloader;
-using Crawler.Logger;
 using Crawler.Pipelines;
-using LogManager = NLog.LogManager;
 
 namespace Crawler.Simple
 {

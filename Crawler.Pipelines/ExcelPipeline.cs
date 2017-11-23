@@ -15,6 +15,5 @@ namespace Crawler.Pipelines
 
     public class ExcelPipelineOptions : PipelineOptions
     {
-
     }
 }

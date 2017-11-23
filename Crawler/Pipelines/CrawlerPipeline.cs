@@ -115,6 +115,19 @@ namespace Crawler.Pipelines
 
         protected TOptions Options { get; }
 
+        protected virtual Site OnParseSite(object item)
+        {
+            if (item is Site site)
+            {
+                return site;
+            }
+            if (item is string s)
+            {
+                return new Site(s);
+            }
+            return new Site();
+        }
+
         protected override async Task BeforeExceute(PipelineContext context)
         {
             if (Options.Scheduler != null)
@@ -135,19 +148,6 @@ namespace Crawler.Pipelines
             }
 
             await base.BeforeExceute(context);
-        }
-
-        protected virtual Site OnParseSite(object item)
-        {
-            if (item is Site site)
-            {
-                return site;
-            }
-            if (item is string s)
-            {
-                return new Site(s);
-            }
-            return new Site();
         }
 
         protected override Task AfterExceute(PipelineContext context)

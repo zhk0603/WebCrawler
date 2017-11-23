@@ -128,10 +128,20 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearPipelines();
             CrawlerBuilder.Current.ClearSites();
 
+            var cookie =
+                "UM_distinctid=15fd7aea40f104-0faa19baa1a89f-5b4a2c1d-100200-15fd7aea41033f; .CNBlogsCookie=7DCE52A39EEF9BFBFD03285E1C5F450136D1B76B140607C3FDACDD9EA6A5BFE3BCB02A769920C4A2F63BC2857757876A0726EC8B6D59F3039F4FBB573DA23B0645323061077804092F31FB7C776C6B2A3E6B33C6; .Cnblogs.AspNetCore.Cookies=CfDJ8BMYgQprmCpNu7uffp6PrYY_K-64pplxZZ8bw-7p3XTJJdlaNLZyFgZb2peEhUzinW7S5bRbXITCLcZCsbif_4TZVwdduO1t8qv7hjJ9STctL8Uwt5TOdF_k0Vy7HghXRArOb3fIF5jyd73XuvGt9jmran2od20egcgoRdlq3_gWB5OsR2h5AXFRQGqNUQueGmNh9nwoaKUQ9Sy8Zas1eIZGGJyPGpnjtMgXIY5gt3sOrbZrZk0FanUF2dPfhH6HwuVMSxIDDhkNiF9jN9_gSN3c0PIzFcV3LReUAJc31mmY; .AspNetCore.Antiforgery.b8-pDmTq1XM=CfDJ8BMYgQprmCpNu7uffp6PrYZwkiQVIRV01gbQ3QP3NxpfdtbDHl3XmzrhkMZhV3zyBp-XUMpusUAxoYOCgLe4XfxSUEaZwLMpuF9csFQxzRBPDI1mfroDhWa1PommGwyADOtywoNVehoqgZHAlCgGd6Q;";
+            var waitForComplete = 60 * 1000;
+            var sleep = 500;
+
             CrawlerBuilder.Current
-                .AddSite("https://home.cnblogs.com/u/cyq1162")
-                .UsePipeline(typeof(CnBlogs.UserInfoPipeline), new PipelineOptions(){ WaitForComplete=500 })
-                .SetLogFactory(new NLoggerFactory());
+                .AddSite("https://home.cnblogs.com/u/artech")
+                .UsePipeline(typeof(CnBlogs.UserInfoPipeline), new CnBlogs.CnBlogsOptions{ Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
+                .UsePipeline<CnBlogs.FollowFansPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie })
+                .UsePipeline<CnBlogs.PostUserListPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
+                .SetLogFactory(new NLoggerFactory())
+                .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
+                .UseMultiThread(5)
+                .UseParallelMode();
 
             return CrawlerBuilder.Current.Builder();
         }
