@@ -129,9 +129,9 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearSites();
 
             var cookie =
-                "UM_distinctid=15fd7aea40f104-0faa19baa1a89f-5b4a2c1d-100200-15fd7aea41033f; .CNBlogsCookie=7DCE52A39EEF9BFBFD03285E1C5F450136D1B76B140607C3FDACDD9EA6A5BFE3BCB02A769920C4A2F63BC2857757876A0726EC8B6D59F3039F4FBB573DA23B0645323061077804092F31FB7C776C6B2A3E6B33C6; .Cnblogs.AspNetCore.Cookies=CfDJ8BMYgQprmCpNu7uffp6PrYY_K-64pplxZZ8bw-7p3XTJJdlaNLZyFgZb2peEhUzinW7S5bRbXITCLcZCsbif_4TZVwdduO1t8qv7hjJ9STctL8Uwt5TOdF_k0Vy7HghXRArOb3fIF5jyd73XuvGt9jmran2od20egcgoRdlq3_gWB5OsR2h5AXFRQGqNUQueGmNh9nwoaKUQ9Sy8Zas1eIZGGJyPGpnjtMgXIY5gt3sOrbZrZk0FanUF2dPfhH6HwuVMSxIDDhkNiF9jN9_gSN3c0PIzFcV3LReUAJc31mmY; .AspNetCore.Antiforgery.b8-pDmTq1XM=CfDJ8BMYgQprmCpNu7uffp6PrYZwkiQVIRV01gbQ3QP3NxpfdtbDHl3XmzrhkMZhV3zyBp-XUMpusUAxoYOCgLe4XfxSUEaZwLMpuF9csFQxzRBPDI1mfroDhWa1PommGwyADOtywoNVehoqgZHAlCgGd6Q;";
+                "UM_distinctid=15fd7aea40f104-0faa19baa1a89f-5b4a2c1d-100200-15fd7aea41033f; .AspNetCore.Antiforgery.b8-pDmTq1XM=CfDJ8BMYgQprmCpNu7uffp6PrYZwkiQVIRV01gbQ3QP3NxpfdtbDHl3XmzrhkMZhV3zyBp-XUMpusUAxoYOCgLe4XfxSUEaZwLMpuF9csFQxzRBPDI1mfroDhWa1PommGwyADOtywoNVehoqgZHAlCgGd6Q; __utma=226521935.940203622.1510883896.1511340298.1511400020.2;.CNBlogsCookie=21F214BA965AD78A4B0668129C6D0F61DC03622B866C6F582007CB680D65ABB3B5C9B2C5135AF06CCEC079D674E6F77112E69D258F3E49159F5A62C270A934F737B34F6C1BE88F2A94D2D8483835482A2D69BDA3D8C7865D3C1F31C9456DFA87ABF84792; .Cnblogs.AspNetCore.Cookies=CfDJ8BMYgQprmCpNu7uffp6PrYZl07eg1xkLN9aBbgKGLXJez8caqpvgeam7-VtYQzrAWXnrYOIgzuBTZsorAdQPSh6MmR2ymUNdLOIHtui9cmIClnj3h4bgVHksFeKCtw25aezLtHCSsdn994FToPdBphzu0HiHTdPODta7IqtCghP6yUHpzIdqphHAL0Uovhj0BACtOY2TNYUSE-mJIE0t2MMSiXDvtkpoRTTndl8Z-G0tHd2Uq9AWkIWsi534ByWwUnYZpYo490crqL00myP6pdA_xYQ_wqwc3nrG8LaVcGYdzCtY_RcnpLRL7T_ompunYQ;";
             var waitForComplete = 60 * 1000;
-            var sleep = 500;
+            var sleep = 300;
 
             CrawlerBuilder.Current
                 .AddSite("https://home.cnblogs.com/u/artech")
@@ -140,7 +140,7 @@ namespace Crawler.Simple
                 .UsePipeline<CnBlogs.PostUserListPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
-                .UseMultiThread(5)
+                .UseMultiThread(1)
                 .UseParallelMode();
 
             return CrawlerBuilder.Current.Builder();

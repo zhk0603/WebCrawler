@@ -21,17 +21,20 @@ namespace Crawler.Simple
         private static readonly string _method = "POST";
         private static readonly string _accept = "application/json, text/javascript, */*; q=0.01";
         private static readonly string _contentType = "application/json; charset=UTF-8";
-        private static readonly List<UserInfo> _userInfo = new List<UserInfo>();
+        private static ulong _count = 0;
 
         public class UserInfoPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _followFansScheduler;
+            private readonly Schedulers.IScheduler _exportScheduler;
 
             public UserInfoPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler = Schedulers.SchedulerManager.GetSiteScheduler("CnBlogs");
                 _followFansScheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
+                _exportScheduler =
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<UserInfo>>("exportScheduler");
             }
 
             protected override void Initialize(PipelineContext context)
@@ -169,10 +172,10 @@ namespace Crawler.Simple
 
                         #endregion
 
-                        _userInfo.Add(user);
+                        // 将用户信息推入导出调度器。
+                        _exportScheduler.Push(user);
 
-                        Logger.Trace($"昵称：{user.NickName}\t姓名：{user.UserName}");
-                        Logger.Trace("总人数：" + _userInfo.Count);
+                        Logger.Trace("总人数：" + (++_count)); // 不太准确的统计。
                     }
                 }
 
@@ -388,6 +391,12 @@ namespace Crawler.Simple
             public int FollowingCount { get; set; } // 关注数量
             public int FollowerCount { get; set; } // 粉丝数量
             public string AvatarUrl { get; set; } // 头像地址
+
+            // 重写tostring ，BloomFilter 会调用此方法判断是否已经添加过。
+            public override string ToString()
+            {
+                return "export_" + UserId;
+            }
         }
 
         public class UsersObj
