@@ -177,7 +177,7 @@ namespace Crawler.Simple
                         // 将用户信息推入导出调度器。
                         SaveToDb(user);
 
-                        Logger.Trace("总人数：" + (++_count)); // 不太准确的统计。
+                        //Logger.Trace("总人数：" + (++_count)); // 不太准确的统计。
                     }
                 }
 

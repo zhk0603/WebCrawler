@@ -18,8 +18,7 @@ namespace Crawler
 
         public NLoggerReporter(PipelineRunMode runMode,
             IEnumerable<IPipeline> pipelines,
-            List<Dictionary<string, IScheduler>> schedulerDic,
-            ICrawler crawler) : this(runMode, pipelines)
+            List<Dictionary<string, IScheduler>> schedulerDic) : this(runMode, pipelines)
         {
             _runMode = runMode;
             _schedulerDic = schedulerDic;
@@ -56,9 +55,9 @@ namespace Crawler
         protected virtual void ReportStatusCore()
         {
             var sb = new StringBuilder();
+            sb.Append("*********************************************************\r\n");
             sb.Append(
                 $"Pipeline Mode:{_runMode}, Pipelines:{_pipelines.Count}, Completed Pipeline:{_pipelines.Count(x => x.IsComplete)}");
-
             foreach (var dic in _schedulerDic)
             {
                 foreach (var pair in dic)
@@ -67,6 +66,7 @@ namespace Crawler
                     sb.Append($"Scheduler:{pair.Key}, Count:{pair.Value.Count}, TotalCount:{pair.Value.TotalCount}");
                 }
             }
+            sb.Append("\r\n*********************************************************");
             Logger.LoggerManager.GetLogger("Reporter").Info(sb.ToString());
         }
     }

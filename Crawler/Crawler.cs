@@ -18,7 +18,6 @@ namespace Crawler
         private int _threadNum;
         private string _named;
         private PipelineRunMode _runMode;
-        private Task _pipelineStatusTask;
         private Timer _pipelineStatusTimer;
         private IReporter _reporter;
 
@@ -84,9 +83,9 @@ namespace Crawler
             return new NLoggerReporter(
                 RunMode,
                 _pipelines,
-                Schedulers.SchedulerManager.GetAllScheduler(),
-                this);
+                Schedulers.SchedulerManager.GetAllScheduler());
         }
+
 
         public CrawlerState CrawlerState { get; protected set; }
 

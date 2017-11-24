@@ -141,7 +141,7 @@ namespace Crawler.Simple
                 .UsePipeline<CnBlogs.PostUserListPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
-                .UseMultiThread(1)
+                .UseMultiThread(4)
                 .UseParallelMode();
 
             return CrawlerBuilder.Current.Builder();
