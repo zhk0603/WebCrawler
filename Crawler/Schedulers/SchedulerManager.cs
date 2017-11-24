@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Crawler.Schedulers
@@ -22,6 +23,11 @@ namespace Crawler.Schedulers
             where TScheduler : IScheduler
         {
             return InternalGetScheduler(typeof(TScheduler), key);
+        }
+
+        public static List<Dictionary<string, IScheduler>> GetAllScheduler()
+        {
+            return ScheduleContainer.Select(x => x.Value).ToList();
         }
 
         internal static IScheduler InternalGetScheduler(Type schedulerType, string key)

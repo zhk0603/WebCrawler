@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Crawler.Pipelines;
 
@@ -8,8 +9,8 @@ namespace Crawler.Simple
     {
         private static void Main(string[] args)
         {
-            //SimpleCrawler.CnBlog().Run();
-            //Console.ReadKey();
+            SimpleCrawler.CnBlog().Run();
+            Console.ReadKey();
 
             //SimpleCrawler.CnieltsSpider().Run();
             //Console.ReadKey();
@@ -23,9 +24,8 @@ namespace Crawler.Simple
             //SimpleCrawler.CrawlerFullSite().Run();
             //Console.ReadKey();
 
-            SimpleCrawler.CnBlogsCrawler().Run();
-            Console.ReadKey();
-
+            //SimpleCrawler.CnBlogsCrawler().Run();
+            //Console.ReadKey();
         }
     }
 

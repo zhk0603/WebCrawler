@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -27,8 +28,6 @@ namespace Crawler.Simple
         public class SaveUserInfoPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _followFansScheduler;
-            private readonly Schedulers.IScheduler _sqlScheduler;
-
             private readonly SqlConnection _conn;
 
             public SaveUserInfoPipeline(CnBlogsOptions options) : base(options)
@@ -36,8 +35,6 @@ namespace Crawler.Simple
                 Options.Scheduler = Schedulers.SchedulerManager.GetSiteScheduler("CnBlogs");
                 _followFansScheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
-                _sqlScheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<UserInfo>>("sqlScheduler");
 
                 _conn = new SqlConnection(Options.ConnStr);
                 _conn.Open();
@@ -177,7 +174,6 @@ namespace Crawler.Simple
                             .GetAttributeValue("src", "");
 
                         #endregion
-
                         // 将用户信息推入导出调度器。
                         SaveToDb(user);
 
@@ -283,11 +279,10 @@ namespace Crawler.Simple
         }
 
         // 从用户关注的人/粉丝中获取种子
-        public class FollowFansPipeline : CrawlerPipeline<CnBlogsOptions>
+        public class AnalysisFollowPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _requestItemScheduler;
-
-            public FollowFansPipeline(CnBlogsOptions options) : base(options)
+            public AnalysisFollowPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
@@ -295,7 +290,7 @@ namespace Crawler.Simple
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<RequestItem>>("requestItemScheduler");
             }
 
-            protected override async Task<bool> ExecuteAsync(PipelineContext context)
+            protected override Task<bool> ExecuteAsync(PipelineContext context)
             {
                 if (context.Site != null)
                 {
@@ -303,7 +298,7 @@ namespace Crawler.Simple
                     Analysis(userId, true);
                     Analysis(userId, false);
                 }
-                return true;
+                return base.ExecuteAsync(context);
             }
 
             void Analysis(Guid userId, bool isFollowes)
@@ -321,6 +316,7 @@ namespace Crawler.Simple
                 var page = Options.Downloader.GetPage(site);
                 if (page.HttpStatusCode == 200)
                 {
+
                     var result = Newtonsoft.Json.JsonConvert.DeserializeObject<PagerObj>(page.HtmlSource);
                     if (!string.IsNullOrEmpty(result.Pager))
                     {
@@ -355,6 +351,7 @@ namespace Crawler.Simple
                             IsFollowes = false
                         });
                     }
+
                 }
             }
         }
@@ -367,7 +364,6 @@ namespace Crawler.Simple
                 Options.Scheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<RequestItem>>("requestItemScheduler");
                 _cnBlogsScheduler = Schedulers.SchedulerManager.GetSiteScheduler("CnBlogs");
-
             }
 
             protected override Task<bool> ExecuteAsync(PipelineContext context)
@@ -384,7 +380,6 @@ namespace Crawler.Simple
                         }
                     }
                 }
-
                 return base.ExecuteAsync(context);
             }
 
@@ -456,10 +451,10 @@ namespace Crawler.Simple
 
         public class User
         {
-            public string DisplayName { get; set; }
+            //public string DisplayName { get; set; }
             public string Alias { get; set; }
-            public string Remark { get; set; }
-            public string IconName { get; set; }
+            //public string Remark { get; set; }
+            //public string IconName { get; set; }
         }
 
         public class RequestItem

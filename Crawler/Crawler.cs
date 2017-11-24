@@ -18,6 +18,8 @@ namespace Crawler
         private int _threadNum;
         private string _named;
         private PipelineRunMode _runMode;
+        private Task _pipelineStatusTask;
+        private IReporter _reporter;
 
         public Crawler()
         {
@@ -70,6 +72,17 @@ namespace Crawler
             }
         }
 
+        public IReporter Reporter
+        {
+            get => _reporter ?? (_reporter = CreateDefaultReporter());
+            set => _reporter = value ?? throw new InvalidOperationException("Reporter不可设置为null.");
+        }
+
+        protected virtual IReporter CreateDefaultReporter()
+        {
+            return new NLoggerReporter(_pipelines, Schedulers.SchedulerManager.GetAllScheduler());
+        }
+
         public CrawlerState CrawlerState { get; protected set; }
 
         public ILogger Logger { get; protected set; }
@@ -109,6 +122,15 @@ namespace Crawler
 
             CrawlerState = CrawlerState.Running;
             _beginTime = DateTime.Now;
+
+            _pipelineStatusTask = Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    // 报告状态。
+                    Reporter.ReportStatus();
+                }
+            });
 
             while (CrawlerState == CrawlerState.Running || CrawlerState == CrawlerState.Stopped)
             {
@@ -163,6 +185,7 @@ namespace Crawler
                 });
             }
 
+            _pipelineStatusTask.Wait(500);
             _endTime = DateTime.Now;
             Logger?.Info("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds);
         }
@@ -175,6 +198,18 @@ namespace Crawler
         private bool CheckState(CrawlerState state)
         {
             return CrawlerState == state;
+        }
+
+        protected virtual void ReportStatus()
+        {
+            Logger.Info($"Pipeline Mode:{RunMode}, Pipelines:{Pipelines}, Completed Pipeline:{1}");
+            foreach (var schedulerDic in Schedulers.SchedulerManager.GetAllScheduler())
+            {
+                foreach (var item in schedulerDic)
+                {
+                    Logger.Info($"Scheduler:{item.Key}, Total:{item.Value.Count}, Completed:{1}");
+                }
+            }
         }
     }
 }

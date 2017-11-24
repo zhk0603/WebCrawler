@@ -137,11 +137,11 @@ namespace Crawler.Simple
             CrawlerBuilder.Current
                 .AddSite("https://home.cnblogs.com/u/artech")
                 .UsePipeline(typeof(CnBlogs.SaveUserInfoPipeline), new CnBlogs.CnBlogsOptions{ Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie, ConnStr = connStr})
-                .UsePipeline<CnBlogs.FollowFansPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie })
+                .UsePipeline<CnBlogs.AnalysisFollowPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie })
                 .UsePipeline<CnBlogs.PostUserListPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
-                .UseMultiThread(3)
+                .UseMultiThread(1)
                 .UseParallelMode();
 
             return CrawlerBuilder.Current.Builder();
