@@ -10,6 +10,7 @@ namespace Crawler.Schedulers
 
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly List<T> _stack = new List<T>();
+        private long _totalCount = 0;
 
         object IScheduler.Pop()
         {
@@ -73,12 +74,15 @@ namespace Crawler.Schedulers
             }
         }
 
+        public long TotalCount => _totalCount;
+
         public virtual void Push(T requestSite)
         {
             if (_urlFilter == null || !_urlFilter.Contains(requestSite.ToString()))
             {
                 _stack.Add(requestSite);
                 _urlFilter?.Add(requestSite.ToString());
+                _totalCount++;
             }
         }
 

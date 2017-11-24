@@ -19,6 +19,7 @@ namespace Crawler
         private string _named;
         private PipelineRunMode _runMode;
         private Task _pipelineStatusTask;
+        private Timer _pipelineStatusTimer;
         private IReporter _reporter;
 
         public Crawler()
@@ -80,7 +81,11 @@ namespace Crawler
 
         protected virtual IReporter CreateDefaultReporter()
         {
-            return new NLoggerReporter(_pipelines, Schedulers.SchedulerManager.GetAllScheduler());
+            return new NLoggerReporter(
+                RunMode,
+                _pipelines,
+                Schedulers.SchedulerManager.GetAllScheduler(),
+                this);
         }
 
         public CrawlerState CrawlerState { get; protected set; }
@@ -123,14 +128,10 @@ namespace Crawler
             CrawlerState = CrawlerState.Running;
             _beginTime = DateTime.Now;
 
-            _pipelineStatusTask = Task.Factory.StartNew(() =>
+            _pipelineStatusTimer = new Timer(x =>
             {
-                while (true)
-                {
-                    // 报告状态。
-                    Reporter.ReportStatus();
-                }
-            });
+                Reporter.ReportStatus();
+            }, null, 0, Reporter.ReportStatusInterval);
 
             while (CrawlerState == CrawlerState.Running || CrawlerState == CrawlerState.Stopped)
             {
@@ -185,7 +186,7 @@ namespace Crawler
                 });
             }
 
-            _pipelineStatusTask.Wait(500);
+            _pipelineStatusTimer.Dispose();
             _endTime = DateTime.Now;
             Logger?.Info("总耗时（s）：" + (_endTime - _beginTime).TotalSeconds);
         }
