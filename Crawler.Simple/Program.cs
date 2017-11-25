@@ -26,6 +26,26 @@ namespace Crawler.Simple
 
             SimpleCrawler.CnBlogsCrawler().Run();
             Console.ReadKey();
+
+            //var timer = new Timer(o =>
+            //{
+            //    Console.WriteLine("timer");
+
+            //}, null, 0, 1000);
+
+            //Parallel.For(0, 3, new ParallelOptions()
+            //{
+            //    MaxDegreeOfParallelism = 3
+            //}, i =>
+            //{
+            //    while (true)
+            //    {
+            //        Console.WriteLine(i);
+            //        Thread.Sleep(1000);
+            //    }
+            //});
+
+            //Console.ReadKey();
         }
     }
 

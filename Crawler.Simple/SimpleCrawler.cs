@@ -135,13 +135,13 @@ namespace Crawler.Simple
             var connStr = "server=.;database=t_cnblogs;user=sa;password=123@Abc;";
 
             CrawlerBuilder.Current
-                .AddSite("https://home.cnblogs.com/u/artech")
+                .AddSite("https://home.cnblogs.com/u/daxnet")
                 .UsePipeline(typeof(CnBlogs.SaveUserInfoPipeline), new CnBlogs.CnBlogsOptions{ Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie, ConnStr = connStr})
                 .UsePipeline<CnBlogs.AnalysisFollowPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie })
                 .UsePipeline<CnBlogs.PostUserListPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
                 .SetLogFactory(new NLoggerFactory())
                 .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
-                .UseMultiThread(4)
+                .UseMultiThread(5)
                 .UseParallelMode();
 
             return CrawlerBuilder.Current.Builder();

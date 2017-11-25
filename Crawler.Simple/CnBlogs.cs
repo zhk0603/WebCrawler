@@ -28,7 +28,6 @@ namespace Crawler.Simple
         public class SaveUserInfoPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _followFansScheduler;
-            private readonly SqlConnection _conn;
 
             public SaveUserInfoPipeline(CnBlogsOptions options) : base(options)
             {
@@ -36,8 +35,6 @@ namespace Crawler.Simple
                 _followFansScheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
 
-                _conn = new SqlConnection(Options.ConnStr);
-                _conn.Open();
             }
 
             protected override void Initialize(PipelineContext context)
@@ -236,38 +233,43 @@ namespace Crawler.Simple
      @FollowerCount,
      @AvatarUrl
  );";
-                using (var cmd = new SqlCommand(sql, _conn))
+                using (var conn = new SqlConnection(Options.ConnStr))
                 {
-                    AddParameters(cmd,"@UserId", userInfo.UserId);
-                    AddParameters(cmd,"@NickName", userInfo.NickName);
-                    AddParameters(cmd,"@UserName", userInfo.UserName);
-                    AddParameters(cmd,"@Sex", userInfo.Sex);
-                    AddParameters(cmd,"@Birthday", userInfo.Birthday);
-                    AddParameters(cmd,"@Province", userInfo.Province);
-                    AddParameters(cmd,"@District", userInfo.District);
-                    AddParameters(cmd,"@CurProvince", userInfo.CurProvince);
-                    AddParameters(cmd,"@CurDistrict", userInfo.CurDistrict);
-                    AddParameters(cmd,"@MarriageState", userInfo.MarriageState);
-                    AddParameters(cmd,"@JobTitle", userInfo.JobTitle);
-                    AddParameters(cmd,"@WorkUnit", userInfo.WorkUnit);
-                    AddParameters(cmd,"@JobState", userInfo.JobState);
-                    AddParameters(cmd,"@Interest", userInfo.Interest);
-                    AddParameters(cmd,"@RecentGoals", userInfo.RecentGoals);
-                    AddParameters(cmd,"@Motto", userInfo.Motto);
-                    AddParameters(cmd,"@SelfIntroduction", userInfo.SelfIntroduction);
-                    AddParameters(cmd,"@JoinTime", userInfo.JoinTime);
-                    AddParameters(cmd,"@BlogUrl", userInfo.BlogUrl);
-                    AddParameters(cmd,"@FollowingCount", userInfo.FollowingCount);
-                    AddParameters(cmd,"@FollowerCount", userInfo.FollowerCount);
-                    AddParameters(cmd,"@AvatarUrl", userInfo.AvatarUrl);
+                    conn.Open();
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        AddParameters(cmd, "@UserId", userInfo.UserId);
+                        AddParameters(cmd, "@NickName", userInfo.NickName);
+                        AddParameters(cmd, "@UserName", userInfo.UserName);
+                        AddParameters(cmd, "@Sex", userInfo.Sex);
+                        AddParameters(cmd, "@Birthday", userInfo.Birthday);
+                        AddParameters(cmd, "@Province", userInfo.Province);
+                        AddParameters(cmd, "@District", userInfo.District);
+                        AddParameters(cmd, "@CurProvince", userInfo.CurProvince);
+                        AddParameters(cmd, "@CurDistrict", userInfo.CurDistrict);
+                        AddParameters(cmd, "@MarriageState", userInfo.MarriageState);
+                        AddParameters(cmd, "@JobTitle", userInfo.JobTitle);
+                        AddParameters(cmd, "@WorkUnit", userInfo.WorkUnit);
+                        AddParameters(cmd, "@JobState", userInfo.JobState);
+                        AddParameters(cmd, "@Interest", userInfo.Interest);
+                        AddParameters(cmd, "@RecentGoals", userInfo.RecentGoals);
+                        AddParameters(cmd, "@Motto", userInfo.Motto);
+                        AddParameters(cmd, "@SelfIntroduction", userInfo.SelfIntroduction);
+                        AddParameters(cmd, "@JoinTime", userInfo.JoinTime);
+                        AddParameters(cmd, "@BlogUrl", userInfo.BlogUrl);
+                        AddParameters(cmd, "@FollowingCount", userInfo.FollowingCount);
+                        AddParameters(cmd, "@FollowerCount", userInfo.FollowerCount);
+                        AddParameters(cmd, "@AvatarUrl", userInfo.AvatarUrl);
 
-                    try
-                    {
-                        cmd.ExecuteNonQuery();
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Error(e.Message, e);
+                        try
+                        {
+                            cmd.ExecuteNonQuery();
+                            Logger.Trace($"{userInfo.NickName}[{userInfo.UserId}] success.");
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error(e.Message, e);
+                        }
                     }
                 }
             }
