@@ -28,14 +28,6 @@ namespace Crawler.Simple
             //SimpleCrawler.CnBlogsCrawler().Run();
             //Console.ReadKey();
 
-
-            var rbf = new RedisBloomFilter("localhost:6379");
-            rbf.Add("http:baidu.com");
-            Console.WriteLine(rbf.Contains("http:baidu.com"));
-            Console.WriteLine(rbf.Contains("http:baidu.com1"));
-            Console.WriteLine(rbf.Contains("http:baidu.com2"));
-            Console.WriteLine(rbf.Contains("http:baidu.com3"));
-            Console.ReadKey();
         }
     }
 
