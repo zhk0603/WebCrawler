@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Crawler.Downloader;
 using Crawler.Logger;
 using Crawler.Pipelines;
+using Crawler.Reporter;
 
 namespace Crawler
 {
@@ -179,7 +180,7 @@ namespace Crawler
                         }
                         catch (Exception exception)
                         {
-                            Logger.Error(exception.Message, exception);
+                            Logger.Fatal(exception.Message, exception);
                         }
                     }
                 });
@@ -198,18 +199,6 @@ namespace Crawler
         private bool CheckState(CrawlerState state)
         {
             return CrawlerState == state;
-        }
-
-        protected virtual void ReportStatus()
-        {
-            Logger.Info($"Pipeline Mode:{RunMode}, Pipelines:{Pipelines}, Completed Pipeline:{1}");
-            foreach (var schedulerDic in Schedulers.SchedulerManager.GetAllScheduler())
-            {
-                foreach (var item in schedulerDic)
-                {
-                    Logger.Info($"Scheduler:{item.Key}, Total:{item.Value.Count}, Completed:{1}");
-                }
-            }
         }
     }
 }

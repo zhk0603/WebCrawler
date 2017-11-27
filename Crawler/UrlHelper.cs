@@ -8,18 +8,18 @@ namespace Crawler
 {
     public class UrlHelper
     {
-        public static string Combine(string currenUrl, string absUrl)
+        public static string Combine(string currenUri, string relativeUri)
         {
-            if (string.IsNullOrEmpty(absUrl))
+            if (string.IsNullOrEmpty(relativeUri))
             {
                 return "";
             }
-            if (absUrl.StartsWith("http"))
+            if (relativeUri.StartsWith("http"))
             {
-                return absUrl;
+                return relativeUri;
             }
-            var baseUri = new Uri(currenUrl);
-            var absoluteUri = new Uri(baseUri, absUrl);
+            var baseUri = new Uri(currenUri);
+            var absoluteUri = new Uri(baseUri, relativeUri);
             return absoluteUri.ToString();
         }
     }

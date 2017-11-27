@@ -36,8 +36,12 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.2.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.2.6\lib\net45\StackExchange.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,9 +55,11 @@
     <Compile Include="Crawler.cs" />
     <Compile Include="CrawlerBuilder.cs" />
     <Compile Include="CrawlerConfiguration.cs" />
-    <Compile Include="IReporter.cs" />
+    <Compile Include="RedisFilter.cs" />
+    <Compile Include="Reporter\EmailReporter.cs" />
+    <Compile Include="Reporter\IReporter.cs" />
     <Compile Include="IUrlFilter.cs" />
-    <Compile Include="NLoggerReporter.cs" />
+    <Compile Include="Reporter\NLoggerReporter.cs" />
     <Compile Include="Pipelines\PipelineRunMode.cs" />
     <Compile Include="CrawlerState.cs" />
     <Compile Include="Downloader\HttpDownloader.cs" />

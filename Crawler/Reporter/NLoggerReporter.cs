@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Crawler.Pipelines;
 using Crawler.Schedulers;
-using NLog;
 
-namespace Crawler
+namespace Crawler.Reporter
 {
     public class NLoggerReporter : IReporter
     {
@@ -45,7 +41,7 @@ namespace Crawler
             }
         }
 
-        public int ReportStatusInterval { get; set; } = 3000;
+        public int ReportStatusInterval { get; set; } = 5000;
 
         public void ReportStatus()
         {
@@ -55,18 +51,28 @@ namespace Crawler
         protected virtual void ReportStatusCore()
         {
             var sb = new StringBuilder();
-            sb.Append("*********************************************************\r\n");
-            sb.Append(
-                $"Pipeline Mode:{_runMode}, Pipelines:{_pipelines.Count}, Completed Pipeline:{_pipelines.Count(x => x.IsComplete)}");
+            var pipelineStatus =
+                $"Pipeline Mode:{_runMode}, Pipelines:{_pipelines.Count}, Completed Pipeline:{_pipelines.Count(x => x.IsComplete)}";
+            var maxLength = pipelineStatus.Length;
+            sb.Append(pipelineStatus);
             foreach (var dic in _schedulerDic)
             {
                 foreach (var pair in dic)
                 {
                     sb.Append("\r\n");
-                    sb.Append($"Scheduler:{pair.Key}, Count:{pair.Value.Count}, TotalCount:{pair.Value.TotalCount}");
+                    var tmpStr = $"Scheduler:{pair.Key}, Count:{pair.Value.Count}, TotalCount:{pair.Value.TotalCount}";
+                    sb.Append(tmpStr);
+                    if (tmpStr.Length > maxLength)
+                    {
+                        maxLength = tmpStr.Length;
+                    }
                 }
             }
-            sb.Append("\r\n*********************************************************");
+            sb.Insert(0, "*", maxLength);
+            sb.Insert(maxLength, "\r\n");
+            sb.Append("\r\n");
+            sb.Append('*', maxLength);
+
             Logger.LoggerManager.GetLogger("Reporter").Info(sb.ToString());
         }
     }

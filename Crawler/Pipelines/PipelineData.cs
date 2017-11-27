@@ -8,18 +8,18 @@ namespace Crawler.Pipelines
 {
     public class PipelineData : Dictionary<string, object>
     {
-        public void SetNextData(object data)
+        public void PushData(object data)
         {
             this[Constants.PipelineDataKey] = data;
         }
 
-        public object GetPreviousData()
+        public object PopData()
         {
             TryGetValue(Constants.PipelineDataKey, out var @object);
             return @object;
         }
 
-        public T GetPreviousData<T>()
+        public T PopData<T>()
         {
             return GetValue<T>(Constants.PipelineDataKey);
         }

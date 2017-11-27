@@ -23,7 +23,6 @@ namespace Crawler.Simple
         private static readonly string _method = "POST";
         private static readonly string _accept = "application/json, text/javascript, */*; q=0.01";
         private static readonly string _contentType = "application/json; charset=UTF-8";
-        private static ulong _count = 0;
 
         public class SaveUserInfoPipeline : CrawlerPipeline<CnBlogsOptions>
         {
@@ -171,10 +170,8 @@ namespace Crawler.Simple
                             .GetAttributeValue("src", "");
 
                         #endregion
-                        // 将用户信息推入导出调度器。
-                        SaveToDb(user);
 
-                        //Logger.Trace("总人数：" + (++_count)); // 不太准确的统计。
+                        SaveToDb(user);
                     }
                 }
 
@@ -334,7 +331,7 @@ namespace Crawler.Simple
                             var totalPageCount = int.Parse(totalPageCountNode.InnerText);
                             for (var i = totalPageCount; i > 0; i--)
                             {
-                                // 交给 PostUserListPipeline 去获取用户的粉丝列表数据。
+                                // 交给 CrawlerUserPipeline 去获取用户的粉丝列表数据。
                                 _requestItemScheduler.Push(new RequestItem
                                 {
                                     UserId = userId,
@@ -358,10 +355,10 @@ namespace Crawler.Simple
             }
         }
 
-        public class PostUserListPipeline : CrawlerPipeline<CnBlogsOptions>
+        public class CrawlerUserPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _cnBlogsScheduler;
-            public PostUserListPipeline(CnBlogsOptions options) : base(options)
+            public CrawlerUserPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<RequestItem>>("requestItemScheduler");
@@ -453,10 +450,7 @@ namespace Crawler.Simple
 
         public class User
         {
-            //public string DisplayName { get; set; }
             public string Alias { get; set; }
-            //public string Remark { get; set; }
-            //public string IconName { get; set; }
         }
 
         public class RequestItem

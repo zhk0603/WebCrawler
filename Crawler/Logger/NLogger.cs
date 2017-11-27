@@ -16,6 +16,7 @@ namespace Crawler.Logger
         public bool IsInfoEnabled => _logger.IsInfoEnabled;
         public bool IsWarnEnabled => _logger.IsWarnEnabled;
         public bool IsErrorEnabled => _logger.IsErrorEnabled;
+        public bool IsFatalEnabled { get; }
 
         protected virtual void Write(string message, Exception exception, LogLevel logLevel)
         {
@@ -112,6 +113,21 @@ namespace Crawler.Logger
         public void Error(string message, Exception exception)
         {
             Write(message, exception, LogLevel.Error);
+        }
+
+        public void Fatal(string message)
+        {
+            Write(message, null, LogLevel.Fatal);
+        }
+
+        public void Fatal(Exception exception)
+        {
+            Write(null, exception, LogLevel.Fatal);
+        }
+
+        public void Fatal(string message, Exception exception)
+        {
+            Write(message, exception, LogLevel.Fatal);
         }
     }
 }

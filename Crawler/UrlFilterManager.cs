@@ -15,6 +15,11 @@ namespace Crawler
             _urlFilter = urlFilter;
         }
 
+        public static void SetUrlFilter(Func<IUrlFilter> func)
+        {
+            _urlFilter = func();
+        }
+
         public static IUrlFilter Current => _urlFilter;
     }
 }

@@ -24,6 +24,10 @@
         /// <summary>
         ///     表示错误的日志级别
         /// </summary>
-        Error = 4
+        Error = 4,
+        /// <summary>
+        ///     表示致命的日志级别
+        /// </summary>
+        Fatal = 5
     }
 }

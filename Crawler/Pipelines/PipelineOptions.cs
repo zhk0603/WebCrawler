@@ -16,7 +16,7 @@ namespace Crawler.Pipelines
         public IDownloader Downloader { get; set; }
         public int Sleep { get; set; }
         /// <summary>
-        ///     无法从调度器中获取资源时等待指定时间退出管道。（单位毫秒）
+        ///     无法从调度器中获取资源时等待指定时间退出管道。（单位毫秒）。设为 0，则不退出管道。
         /// </summary>
         public int WaitForComplete { get; set; }
     }

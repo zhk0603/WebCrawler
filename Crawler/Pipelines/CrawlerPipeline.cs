@@ -65,19 +65,17 @@ namespace Crawler.Pipelines
             await AfterExceute(context);
         }
 
-        protected virtual Task BeforeExceute(PipelineContext context)
-        {
-            return Task.FromResult<object>(null);
-        }
-
-
         /// <summary>
         ///     只会执行一次初始化操作。
         /// </summary>
         /// <param name="context"></param>
         protected virtual void Initialize(PipelineContext context)
         {
-            Logger.Trace("initialize");
+        }
+
+        protected virtual Task BeforeExceute(PipelineContext context)
+        {
+            return Task.FromResult<object>(null);
         }
 
         protected virtual Task AfterExceute(PipelineContext context)
@@ -132,8 +130,8 @@ namespace Crawler.Pipelines
         {
             if (Options.Scheduler != null)
             {
-                var site = Options.Scheduler.Pop();
-                if (site == null)
+                var item = Options.Scheduler.Pop();
+                if (item == null)
                 {
                     lock (_swLock)
                     {
@@ -144,7 +142,7 @@ namespace Crawler.Pipelines
                         return;
                     }
                 }
-                context.Site = OnParseSite(site);
+                context.Site = OnParseSite(item);
             }
 
             await base.BeforeExceute(context);
@@ -152,7 +150,7 @@ namespace Crawler.Pipelines
 
         protected override Task AfterExceute(PipelineContext context)
         {
-            if (_stopwatch.ElapsedMilliseconds >= Options.WaitForComplete)
+            if (Options.WaitForComplete > 0 && _stopwatch.ElapsedMilliseconds >= Options.WaitForComplete)
             {
                 this.IsComplete = true;
             }

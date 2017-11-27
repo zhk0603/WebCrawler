@@ -9,6 +9,7 @@ namespace Crawler.Logger
         bool IsInfoEnabled { get; }
         bool IsWarnEnabled { get; }
         bool IsErrorEnabled { get; }
+        bool IsFatalEnabled { get; }
 
         void Trace(string message);
         void Trace(Exception exception);
@@ -25,5 +26,8 @@ namespace Crawler.Logger
         void Error(string message);
         void Error(Exception exception);
         void Error(string message, Exception exception);
+        void Fatal(string message);
+        void Fatal(Exception exception);
+        void Fatal(string message, Exception exception);
     }
 }
