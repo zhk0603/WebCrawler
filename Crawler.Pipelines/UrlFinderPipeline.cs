@@ -60,7 +60,7 @@ namespace Crawler.Pipelines
                 Logger.Error(site.Url + "\t" + page.HtmlSource);
             }
             Logger.Trace("待爬取页面数量：" + Options.Scheduler.Count);
-            Logger.Trace("页面总数：" + UrlFilterManager.Current.Count);
+            Logger.Trace("页面总数：" + Options.Scheduler.TotalCount);
             return Task.FromResult(true);
         }
     }

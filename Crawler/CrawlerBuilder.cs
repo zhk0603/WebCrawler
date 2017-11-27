@@ -153,15 +153,20 @@ namespace Crawler
             return this;
         }
 
-        public CrawlerBuilder UseBloomFilter(int bitSize, int setSize)
+        public CrawlerBuilder UseBloomFilter(int capacity)
         {
-            UrlFilterManager.SetUrlFilter(new BloomFilter(bitSize, setSize));
+            UrlFilterManager.SetUrlFilter(new BloomFilter(capacity));
+            return this;
+        }
+        public CrawlerBuilder UseBloomFilter(int capacity, float errorRate)
+        {
+            UrlFilterManager.SetUrlFilter(new BloomFilter(capacity, errorRate));
             return this;
         }
 
-        public CrawlerBuilder UseBloomFilter(int bitSize, int setSize, int numberOfHashes)
+        public CrawlerBuilder UseBloomFilter(int capacity, float errorRate, BloomFilter.HashFunction hashFunction)
         {
-            UrlFilterManager.SetUrlFilter(new BloomFilter(bitSize, setSize, numberOfHashes));
+            UrlFilterManager.SetUrlFilter(new BloomFilter(capacity, errorRate, hashFunction));
             return this;
         }
 

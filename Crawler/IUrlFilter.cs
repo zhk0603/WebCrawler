@@ -10,6 +10,5 @@ namespace Crawler
     {
         void Add(string url);
         bool Contains(string url);
-        int Count { get; }
     }
 }

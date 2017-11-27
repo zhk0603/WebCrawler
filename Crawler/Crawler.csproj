@@ -55,7 +55,7 @@
     <Compile Include="Crawler.cs" />
     <Compile Include="CrawlerBuilder.cs" />
     <Compile Include="CrawlerConfiguration.cs" />
-    <Compile Include="RedisFilter.cs" />
+    <Compile Include="RedisBloomFilter.cs" />
     <Compile Include="Reporter\EmailReporter.cs" />
     <Compile Include="Reporter\IReporter.cs" />
     <Compile Include="IUrlFilter.cs" />

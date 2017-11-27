@@ -97,7 +97,7 @@ namespace Crawler.Simple
                 })
                 .UseMultiThread(10)
                 .SetLogFactory(new NLoggerFactory())
-                .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
+                .UseBloomFilter(int.MaxValue, 0.001F)
                 .UseNamed("UrlFinderPipeline");
             return CrawlerBuilder.Current.Builder();
         }
@@ -118,7 +118,7 @@ namespace Crawler.Simple
                 .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Cuiqingcai/"))
                 .UseMultiThread(5)
                 .SetLogFactory(new NLoggerFactory())
-                .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
+                .UseBloomFilter(int.MaxValue, 0.001F)
                 .UseNamed("CrawlerFullSite");
             return CrawlerBuilder.Current.Builder();
         }
@@ -140,7 +140,7 @@ namespace Crawler.Simple
                 .UsePipeline<CnBlogs.AnalysisFollowPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie })
                 .UsePipeline<CnBlogs.CrawlerUserPipeline>(new CnBlogs.CnBlogsOptions { Sleep = sleep, WaitForComplete = waitForComplete, Cookie = cookie})
                 .SetLogFactory(new NLoggerFactory())
-                .UseBloomFilter(int.MaxValue, int.MaxValue / 21, 8)
+                .UseBloomFilter(int.MaxValue, 0.001F)
                 .UseMultiThread(5)
                 .UseParallelMode();
 
