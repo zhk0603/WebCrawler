@@ -37,6 +37,9 @@ namespace Crawler.Logger
                 case LogLevel.Error:
                     _logger.Error(exception, message);
                     break;
+                case LogLevel.Fatal:
+                    _logger.Fatal(exception, message);
+                    break;
             }
         }
 

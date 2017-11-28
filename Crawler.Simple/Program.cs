@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Threading;
 using System.Threading.Tasks;
+using Crawler.Filter;
 using Crawler.Pipelines;
 
 namespace Crawler.Simple
@@ -27,6 +28,9 @@ namespace Crawler.Simple
 
             //SimpleCrawler.CnBlogsCrawler().Run();
             //Console.ReadKey();
+
+            SimpleCrawler.RedisCnblogsCrawler().Run();
+            Console.ReadKey();
 
         }
     }

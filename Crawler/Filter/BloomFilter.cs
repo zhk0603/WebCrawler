@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Crawler
+namespace Crawler.Filter
 {
     public class BloomFilter : IUrlFilter
     {
@@ -74,7 +70,7 @@ namespace Crawler
                 throw new ArgumentOutOfRangeException(nameof(errorRate), errorRate,
                     $"errorRate must be between 0 and 1, exclusive. Was {errorRate}");
             if (m < 1) // from overflow in bestM calculation
-                throw new ArgumentOutOfRangeException(
+                throw new ArgumentOutOfRangeException(nameof(m),
                     $"The provided capacity and errorRate values would result in an array of length > int.MaxValue. Please reduce either of these values. Capacity: {capacity}, Error rate: {errorRate}");
 
             // set the secondary hash function

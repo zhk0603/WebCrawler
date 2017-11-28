@@ -1,31 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using StackExchange.Redis;
 
-namespace Crawler
+namespace Crawler.Filter
 {
     public class RedisBloomFilter : IUrlFilter
     {
         private static readonly string RedisFilterKey = "Crawler.RedisFilter";
         private readonly IDatabase _database;
-        private int _hashFunctionCount = 7;
+        private readonly int _hashFunctionCount;
 
-        public RedisBloomFilter(string connectionString)
+        public RedisBloomFilter() : this(System.Configuration.ConfigurationManager.AppSettings["redisConnectionString"], 7)
         {
+        }
+
+        public RedisBloomFilter(string connectionString, int hashFunctionCount)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
             _database = ConnectionMultiplexer.Connect(connectionString).GetDatabase();
+            _hashFunctionCount = hashFunctionCount;
         }
 
         public void Add(string url)
         {
-            int primaryHash = url.GetHashCode();
-            int secondaryHash = HashString(url);
+            var primaryHash = url.GetHashCode();
+            var secondaryHash = HashString(url);
 
             for (int i = 0; i < _hashFunctionCount; i++)
             {
-                int hash = ComputeHash(primaryHash, secondaryHash, i);
+                var hash = ComputeHash(primaryHash, secondaryHash, i);
                 _database.StringSetBit(RedisFilterKey, hash, true);
             }
         }
@@ -33,26 +39,26 @@ namespace Crawler
         public bool Contains(string url)
         {
             int primaryHash = url.GetHashCode();
-            int secondaryHash = HashString(url);
+            var secondaryHash = HashString(url);
             for (int i = 0; i < _hashFunctionCount; i++)
             {
-                int hash = ComputeHash(primaryHash, secondaryHash, i);
+                var hash = ComputeHash(primaryHash, secondaryHash, i);
                 if (_database.StringGetBit(RedisFilterKey, hash) == false)
                     return false;
             }
             return true;
         }
 
-        private int ComputeHash(int primaryHash, int secondaryHash, int i)
+        private long ComputeHash(long primaryHash, long secondaryHash, int i)
         {
-            int resultingHash = (primaryHash + (i * secondaryHash)) % int.MaxValue;
+            var resultingHash = (primaryHash + (i * secondaryHash)) % int.MaxValue;
             return Math.Abs(resultingHash);
         }
 
-        private static int HashString(string input)
+        private static long HashString(string input)
         {
             string s = input;
-            int hash = 0;
+            long hash = 0;
 
             for (int i = 0; i < s.Length; i++)
             {

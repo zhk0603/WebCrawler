@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Crawler.Filter;
 
 namespace Crawler.Schedulers
 {
     public class Scheduler<T> : IScheduler
     {
         private readonly IUrlFilter _urlFilter = UrlFilterManager.Current;
-
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly List<T> _stack = new List<T>();
         private long _totalCount = 0;

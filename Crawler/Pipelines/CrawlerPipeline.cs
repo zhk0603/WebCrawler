@@ -49,8 +49,14 @@ namespace Crawler.Pipelines
                 {
                     if (!_initializen)
                     {
-                        Initialize(context);
-                        _initializen = true;
+                        try
+                        {
+                            Initialize(context);
+                        }
+                        finally
+                        {
+                            _initializen = true;
+                        }
                     }
                 }
             }

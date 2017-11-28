@@ -1,5 +1,7 @@
 ﻿/*
  * 爬取 cnblogs 的用户信息，导出到excel。
+ * 2017年11月28日 13:55:00
+ *     将调度器更换为Redis调度器。
  */
 
 using System;
@@ -30,9 +32,9 @@ namespace Crawler.Simple
 
             public SaveUserInfoPipeline(CnBlogsOptions options) : base(options)
             {
-                Options.Scheduler = Schedulers.SchedulerManager.GetSiteScheduler("CnBlogs");
+                Options.Scheduler = Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("CnBlogs");
                 _followFansScheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<string>>("followFansScheduler");
 
             }
 
@@ -180,7 +182,7 @@ namespace Crawler.Simple
 
             void SaveToDb(UserInfo userInfo)
             {
-                var sql = @"INSERT INTO t_cnblogs.dbo.UserInfo
+                var sql = @"INSERT INTO t_cnblogs.dbo.[UserInfo_2017-11-28]
  (
      UserId,
      NickName,
@@ -284,9 +286,9 @@ namespace Crawler.Simple
             public AnalysisFollowPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<string>>("followFansScheduler");
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<string>>("followFansScheduler");
                 _requestItemScheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<RequestItem>>("requestItemScheduler");
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<RequestItem>>("requestItemScheduler");
             }
 
             protected override Task<bool> ExecuteAsync(PipelineContext context)
@@ -361,8 +363,8 @@ namespace Crawler.Simple
             public CrawlerUserPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.Scheduler<RequestItem>>("requestItemScheduler");
-                _cnBlogsScheduler = Schedulers.SchedulerManager.GetSiteScheduler("CnBlogs");
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<RequestItem>>("requestItemScheduler");
+                _cnBlogsScheduler = Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("CnBlogs");
             }
 
             protected override Task<bool> ExecuteAsync(PipelineContext context)
@@ -453,6 +455,7 @@ namespace Crawler.Simple
             public string Alias { get; set; }
         }
 
+        [Serializable]
         public class RequestItem
         {
             public Guid UserId { get; set; }

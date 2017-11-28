@@ -12,6 +12,7 @@ namespace Crawler
     /// <summary>
     ///     Http请求参考类
     /// </summary>
+    [Serializable]
     public class Site
     {
         public Site()
