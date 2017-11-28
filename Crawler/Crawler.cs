@@ -33,7 +33,8 @@ namespace Crawler
             _pipelines = pipelines ?? throw new ArgumentNullException(nameof(pipelines));
         }
 
-        public Crawler(IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines) : this(Guid.NewGuid().ToString("N"), sites,
+        public Crawler(IEnumerable<Site> sites, IEnumerable<IPipeline> pipelines) : this(Guid.NewGuid().ToString("N"),
+            sites,
             pipelines)
         {
         }
@@ -106,18 +107,25 @@ namespace Crawler
         public void Pause()
         {
             if (CrawlerState == CrawlerState.Running)
+            {
                 CrawlerState = CrawlerState.Stopped;
+                Logger.Warn("爬虫正在暂停……");
+            }
         }
 
         public void Continue()
         {
             if (CrawlerState == CrawlerState.Stopped)
+            {
                 CrawlerState = CrawlerState.Running;
+                Logger.Warn("爬虫继续工作……");
+            }
         }
 
         public void Exit()
         {
             CrawlerState = CrawlerState.Exited;
+            Logger.Warn("爬虫正在退出……");
         }
 
         public void Run()
@@ -172,7 +180,7 @@ namespace Crawler
                             {
                                 Pipelines.FirstOrDefault()?.ExecuteAsync(context).GetAwaiter().GetResult();
                             }
-                            else if(RunMode == PipelineRunMode.Parallel)
+                            else if (RunMode == PipelineRunMode.Parallel)
                             {
                                 Task.WaitAll(Pipelines.Select(pipeline =>
                                     pipeline.ExecuteAsync((PipelineContext) context.Clone())).ToArray());

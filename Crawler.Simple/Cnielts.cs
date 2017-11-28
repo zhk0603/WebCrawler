@@ -43,9 +43,9 @@ namespace Crawler.Simple
                 if (site != null)
                 {
                     var page = _downloader.GetPage(site);
-                    if (page.HttpStatusCode == 200 && page.HtmlNode != null)
+                    if (page.HttpStatusCode == 200 && page.DocumentNode != null)
                     {
-                        var liNodes = page.HtmlNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
+                        var liNodes = page.DocumentNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
                         if (liNodes != null && liNodes.Count > 0)
                         {
                             var courseColl = new List<Course>();
@@ -95,9 +95,9 @@ namespace Crawler.Simple
                     {
                         var page = Options.Downloader.GetPage("http://www.cnielts.com/topic/" + course.Url);
 
-                        if (page.HttpStatusCode == 200 && page.HtmlNode != null)
+                        if (page.HttpStatusCode == 200 && page.DocumentNode != null)
                         {
-                            var downALabelNode = page.HtmlNode.SelectSingleNode("//div[@id='DownTips']/a");
+                            var downALabelNode = page.DocumentNode.SelectSingleNode("//div[@id='DownTips']/a");
                             var url = downALabelNode?.GetAttributeValue("href", "");
                             if (!string.IsNullOrEmpty(url))
                             {

@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Crawler.Filter;
 using Crawler.Pipelines;
+using HtmlAgilityPack;
 
 namespace Crawler.Simple
 {
@@ -29,8 +30,8 @@ namespace Crawler.Simple
             //SimpleCrawler.CnBlogsCrawler().Run();
             //Console.ReadKey();
 
-            SimpleCrawler.RedisCnblogsCrawler().Run();
-            Console.ReadKey();
+            //SimpleCrawler.RedisCnblogsCrawler().Run();
+            //Console.ReadKey();
 
         }
     }
@@ -59,7 +60,7 @@ namespace Crawler.Simple
             return Task.Factory.StartNew(() =>
             {
                 context.Page = Options.Downloader.GetPage(context.Site);
-                var node = context.Page.HtmlNode;
+                var node = context.Page.DocumentNode;
                 var titleColl = node?.SelectNodes("//div[@id='news_list']/div[@class='news_block']/div[2]/h2/a");
                 if (titleColl != null)
                     foreach (var title in titleColl)

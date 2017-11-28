@@ -37,10 +37,10 @@ namespace Crawler.Simple
                     if (context.Site != null)
                     {
                         var page = Options.Downloader.GetPage(context.Site);
-                        if (page.HttpStatusCode == 200 && page.HtmlNode != null)
+                        if (page.HttpStatusCode == 200 && page.DocumentNode != null)
                         {
                             context.Page = page;
-                            var liNodes = page.HtmlNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
+                            var liNodes = page.DocumentNode.SelectNodes("//div[@id='middlebar']/div/ul/li");
                             if (liNodes != null && liNodes.Count > 0)
                             {
                                 foreach (var node in liNodes)
@@ -88,9 +88,9 @@ namespace Crawler.Simple
                     {
                         var page = Options.Downloader.GetPage(context.Site);
 
-                        if (page.HttpStatusCode == 200 && page.HtmlNode != null)
+                        if (page.HttpStatusCode == 200 && page.DocumentNode != null)
                         {
-                            var downALabelNode = page.HtmlNode.SelectSingleNode("//div[@id='DownTips']/a");
+                            var downALabelNode = page.DocumentNode.SelectSingleNode("//div[@id='DownTips']/a");
                             var downloadUrl = downALabelNode?.GetAttributeValue("href", "");
                             if (!string.IsNullOrEmpty(downloadUrl))
                             {

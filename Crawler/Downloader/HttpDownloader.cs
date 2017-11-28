@@ -17,7 +17,6 @@ namespace Crawler.Downloader
     /// </summary>
     public class HttpDownloader : IDownloader
     {
-        #region 预定义方法或者变更
 
         /// <summary>
         ///     根据相传入的数据，得到相应页面数据
@@ -166,7 +165,7 @@ namespace Crawler.Downloader
 
                     var doc = new HtmlDocument();
                     doc.LoadHtml(page.HtmlSource);
-                    page.HtmlNode = doc.DocumentNode;
+                    page.DocumentNode = doc.DocumentNode;
                 }
 
                 #endregion
@@ -388,7 +387,6 @@ namespace Crawler.Downloader
             return true;
         }
 
-        #endregion
     }
 
     /// <summary>

@@ -88,7 +88,6 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearPipelines();
             CrawlerBuilder.Current.ClearSites();
 
-            Filter.UrlFilterManager.SetUrlFilter(new Filter.RedisBloomFilter());
             CrawlerBuilder.Current
                 .AddSite("https://www.yezismile.com")
                 .UsePipeline<UrlFinderPipeline>(new UrlFinderOptons()
@@ -102,6 +101,7 @@ namespace Crawler.Simple
                 .UseMultiThread(10)
                 .SetLogFactory(new NLoggerFactory())
                 //.UseBloomFilter(int.MaxValue, 0.001F)
+                .UseRedisBloomFilter()
                 .UseNamed("UrlFinderPipeline");
 
             return CrawlerBuilder.Current.Builder();
@@ -174,7 +174,6 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearPipelines();
             CrawlerBuilder.Current.ClearSites();
 
-            Filter.UrlFilterManager.SetUrlFilter(new Filter.RedisBloomFilter());
             var cookie =
                 "UM_distinctid=15fd7aea40f104-0faa19baa1a89f-5b4a2c1d-100200-15fd7aea41033f; .AspNetCore.Antiforgery.b8-pDmTq1XM=CfDJ8BMYgQprmCpNu7uffp6PrYZwkiQVIRV01gbQ3QP3NxpfdtbDHl3XmzrhkMZhV3zyBp-XUMpusUAxoYOCgLe4XfxSUEaZwLMpuF9csFQxzRBPDI1mfroDhWa1PommGwyADOtywoNVehoqgZHAlCgGd6Q; __utma=226521935.940203622.1510883896.1511340298.1511400020.2;.CNBlogsCookie=21F214BA965AD78A4B0668129C6D0F61DC03622B866C6F582007CB680D65ABB3B5C9B2C5135AF06CCEC079D674E6F77112E69D258F3E49159F5A62C270A934F737B34F6C1BE88F2A94D2D8483835482A2D69BDA3D8C7865D3C1F31C9456DFA87ABF84792; .Cnblogs.AspNetCore.Cookies=CfDJ8BMYgQprmCpNu7uffp6PrYZl07eg1xkLN9aBbgKGLXJez8caqpvgeam7-VtYQzrAWXnrYOIgzuBTZsorAdQPSh6MmR2ymUNdLOIHtui9cmIClnj3h4bgVHksFeKCtw25aezLtHCSsdn994FToPdBphzu0HiHTdPODta7IqtCghP6yUHpzIdqphHAL0Uovhj0BACtOY2TNYUSE-mJIE0t2MMSiXDvtkpoRTTndl8Z-G0tHd2Uq9AWkIWsi534ByWwUnYZpYo490crqL00myP6pdA_xYQ_wqwc3nrG8LaVcGYdzCtY_RcnpLRL7T_ompunYQ;";
             var waitForComplete = 60 * 60 * 1000;
@@ -205,6 +204,7 @@ namespace Crawler.Simple
                 })
                 .SetLogFactory(new NLoggerFactory())
                 .UseMultiThread(5)
+                .UseRedisBloomFilter()
                 .UseParallelMode();
 
             return CrawlerBuilder.Current.Builder();

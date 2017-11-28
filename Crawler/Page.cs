@@ -12,7 +12,7 @@ namespace Crawler
         public byte[] ResultByte { get; set; }
         public string HtmlSource { get; set; }
         public WebHeaderCollection Header { get; set; }
-        public HtmlNode HtmlNode { get; set; }
+        public HtmlNode DocumentNode { get; set; }
         public int HttpStatusCode { get; set; }
         public string StatusDescription { get; set; }
     }

@@ -63,7 +63,7 @@ namespace Crawler.Simple
                 if (context.Site != null)
                 {
                     var page = Options.Downloader.GetPage(context.Site);
-                    if (page.HttpStatusCode == 200 && page.HtmlNode != null)
+                    if (page.HttpStatusCode == 200 && page.DocumentNode != null)
                     {
                         var reg = new Regex("[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-Z0-9]{12}",
                             RegexOptions.IgnoreCase);
@@ -77,7 +77,7 @@ namespace Crawler.Simple
 
                         #region 正则匹配信息。
 
-                        var userProfileNode = page.HtmlNode.SelectSingleNode("//div[@id='user_profile_block']");
+                        var userProfileNode = page.DocumentNode.SelectSingleNode("//div[@id='user_profile_block']");
                         var htmlSource = userProfileNode.InnerHtml;
                         match = Regex.Match(htmlSource, "<h1[^>]* class=\"display_name\">([^<]*)</h1>");
                         if (match.Success)

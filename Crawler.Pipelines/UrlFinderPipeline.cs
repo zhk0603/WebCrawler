@@ -34,10 +34,10 @@ namespace Crawler.Pipelines
                 return Task.FromResult(true);
             }
             var page = Options.Downloader.GetPage(site);
-            if (page.HttpStatusCode == 200 && page.HtmlNode != null)
+            if (page.HttpStatusCode == 200 && page.DocumentNode != null)
             {
                 context.Page = page;
-                var aNodes = page.HtmlNode.SelectNodes("//a");
+                var aNodes = page.DocumentNode.SelectNodes("//a");
                 if (aNodes != null && aNodes.Count > 0)
                 {
                     foreach (var item in aNodes)

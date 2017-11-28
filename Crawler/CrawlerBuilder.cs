@@ -39,6 +39,7 @@ namespace Crawler
             var site = new Site(url);
             return AddSite(site);
         }
+
         public CrawlerBuilder AddSite(Site site)
         {
             if (site == null)
@@ -89,6 +90,7 @@ namespace Crawler
             _sites.Clear();
             return this;
         }
+
         public CrawlerBuilder ClearPipelines()
         {
             _pipelines.Clear();
@@ -159,6 +161,7 @@ namespace Crawler
             UrlFilterManager.SetUrlFilter(new BloomFilter(capacity));
             return this;
         }
+
         public CrawlerBuilder UseBloomFilter(int capacity, float errorRate)
         {
             UrlFilterManager.SetUrlFilter(new BloomFilter(capacity, errorRate));
@@ -168,6 +171,18 @@ namespace Crawler
         public CrawlerBuilder UseBloomFilter(int capacity, float errorRate, BloomFilter.HashFunction hashFunction)
         {
             UrlFilterManager.SetUrlFilter(new BloomFilter(capacity, errorRate, hashFunction));
+            return this;
+        }
+
+        public CrawlerBuilder UseRedisBloomFilter()
+        {
+            UrlFilterManager.SetUrlFilter(new RedisBloomFilter());
+            return this;
+        }
+
+        public CrawlerBuilder UseRedisBloomFilter(string connectionString, int hashFunctionCount)
+        {
+            UrlFilterManager.SetUrlFilter(new RedisBloomFilter(connectionString, hashFunctionCount));
             return this;
         }
 
