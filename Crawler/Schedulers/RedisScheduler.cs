@@ -98,7 +98,7 @@ namespace Crawler.Schedulers
 
         public long TotalCount => _totalCount;
 
-        private byte[] Serialize(object obj)
+        private static byte[] Serialize(object obj)
         {
             if (obj == null)
             {
@@ -113,7 +113,7 @@ namespace Crawler.Schedulers
             }
         }
 
-        private bool TryDeserialize(byte[] data, out T @object)
+        private static bool TryDeserialize(byte[] data, out T @object)
         {
             @object = default(T);
             if (data == null)

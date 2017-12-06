@@ -49,8 +49,8 @@ namespace Crawler.Simple
 
                                     var reg = new Regex(@"(?<time>\(.*\))");
                                     Match match = reg.Match(node.InnerText);
-                                    var tiem = match.Groups["time"].Value;
-                                    var time = tiem.Substring(1, tiem.Length - 2);
+                                    var time = match.Groups["time"].Value;
+                                    time = time.Substring(1, time.Length - 2);
 
                                     var course = new Course
                                     {
