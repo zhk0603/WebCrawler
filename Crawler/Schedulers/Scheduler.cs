@@ -7,7 +7,6 @@ namespace Crawler.Schedulers
 {
     public class Scheduler<T> : IScheduler
     {
-        private readonly IUrlFilter _urlFilter = UrlFilterManager.Current;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly List<T> _stack = new List<T>();
         private long _totalCount = 0;
@@ -78,10 +77,10 @@ namespace Crawler.Schedulers
 
         public virtual void Push(T requestSite)
         {
-            if (_urlFilter == null || !_urlFilter.Contains(requestSite.ToString()))
+            if (UrlFilterManager.Current == null || !UrlFilterManager.Current.Contains(requestSite.ToString()))
             {
                 _stack.Add(requestSite);
-                _urlFilter?.Add(requestSite.ToString());
+                UrlFilterManager.Current?.Add(requestSite.ToString());
                 _totalCount++;
             }
         }

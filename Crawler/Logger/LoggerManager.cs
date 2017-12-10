@@ -10,6 +10,8 @@ namespace Crawler.Logger
     {
         private static ILoggerFactory _loggerFactory;
 
+        public static ILoggerFactory CurrentFactory => _loggerFactory ?? (_loggerFactory = new NLoggerFactory());
+
         public static void SetLogFactory(ILoggerFactory factory)
         {
             _loggerFactory = factory ?? throw new ArgumentNullException(nameof(factory));
@@ -22,7 +24,7 @@ namespace Crawler.Logger
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return _loggerFactory.Create(name);
+            return CurrentFactory.Create(name);
         }
 
         public static ILogger GetLogger(Type type)
@@ -31,12 +33,12 @@ namespace Crawler.Logger
             {
                 throw new ArgumentNullException(nameof(type));
             }
-            return _loggerFactory.Create(type);
+            return CurrentFactory.Create(type);
         }
 
         public static ILogger GetLogger<T>()
         {
-            return _loggerFactory.Create<T>();
+            return CurrentFactory.Create<T>();
         }
     }
 }

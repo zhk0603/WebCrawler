@@ -16,6 +16,6 @@ namespace Crawler.Filter
             _urlFilter = func();
         }
 
-        public static IUrlFilter Current => _urlFilter;
+        public static IUrlFilter Current => _urlFilter ?? (_urlFilter = new BloomFilter(int.MaxValue / 21, 0.001F));
     }
 }

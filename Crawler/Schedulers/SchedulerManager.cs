@@ -65,7 +65,8 @@ namespace Crawler.Schedulers
                 {
                     if (!schedules.TryGetValue(key, out scheduler))
                     {
-                        scheduler = RedisSchedulerFactory(schedulerType, key) ?? (IScheduler) Activator.CreateInstance(schedulerType);
+                        scheduler = RedisSchedulerFactory(schedulerType, key) ??
+                                    (IScheduler) Activator.CreateInstance(schedulerType);
                         schedules.Add(key, scheduler);
                     }
                 }
@@ -75,7 +76,8 @@ namespace Crawler.Schedulers
 
         private static IScheduler RedisSchedulerFactory(Type schedulerType, string key)
         {
-            if (schedulerType.GetGenericTypeDefinition() == typeof(RedisScheduler<>))
+            if (schedulerType.IsGenericType &&
+                schedulerType.GetGenericTypeDefinition() == typeof(RedisScheduler<>))
             {
                 var constructors = schedulerType.GetConstructors();
 
@@ -87,7 +89,7 @@ namespace Crawler.Schedulers
                     var parameterTypes = parameters.Select(p => p.ParameterType).ToArray();
                     if (parameterTypes.Length != 2) continue;
                     if (parameterTypes.Any(x => x != typeof(string))) continue;
-                    return (IScheduler)constructor.Invoke(new object[] { schedulerKey, connectionString});
+                    return (IScheduler) constructor.Invoke(new object[] {schedulerKey, connectionString});
                 }
             }
             return null;

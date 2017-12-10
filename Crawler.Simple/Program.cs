@@ -30,8 +30,8 @@ namespace Crawler.Simple
             //SimpleCrawler.CnBlogsCrawler().Run();
             //Console.ReadKey();
 
-            //SimpleCrawler.RedisCnblogsCrawler().Run();
-            //Console.ReadKey();
+            SimpleCrawler.RedisCnblogsCrawler().Run();
+            Console.ReadKey();
 
         }
     }

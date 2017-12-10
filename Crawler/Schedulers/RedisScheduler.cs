@@ -14,7 +14,6 @@ namespace Crawler.Schedulers
     public class RedisScheduler<T> : IScheduler
     {
         private readonly string _redisSchedulerKey;
-        private readonly IUrlFilter _urlFilter;
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
         private readonly IDatabase _database;
         private long _totalCount;
@@ -32,7 +31,6 @@ namespace Crawler.Schedulers
 
             _redisSchedulerKey = $"Crawler.Schedulers.RedisScheduler.{name}";
             _database = ConnectionMultiplexer.Connect(connectionString).GetDatabase();
-            _urlFilter = UrlFilterManager.Current;
         }
 
         object IScheduler.Pop()
@@ -86,10 +84,10 @@ namespace Crawler.Schedulers
 
         public virtual void Push(T requestSite)
         {
-            if (_urlFilter == null || !_urlFilter.Contains(_redisSchedulerKey + requestSite))
+            if (UrlFilterManager.Current == null || !UrlFilterManager.Current.Contains(_redisSchedulerKey + requestSite))
             {
                 _database.ListLeftPush(_redisSchedulerKey, Serialize(requestSite));
-                _urlFilter?.Add(_redisSchedulerKey + requestSite);
+                UrlFilterManager.Current?.Add(_redisSchedulerKey + requestSite);
                 _totalCount++;
             }
         }

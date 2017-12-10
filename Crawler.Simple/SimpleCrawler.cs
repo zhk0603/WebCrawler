@@ -53,7 +53,6 @@ namespace Crawler.Simple
                     DownloadDirectory = @"E:\学习资料\English\新概念第二册\"
                 })
                 .UseMultiThread(1)
-                .SetLogFactory(new NLoggerFactory())
                 .UseNamed("CnieltsSpider");
             return CrawlerBuilder.Current.Builder();
         }
@@ -72,11 +71,10 @@ namespace Crawler.Simple
                 .UsePipeline<Cnielts_V2.CnieltsPipeline2>(new PipelineOptions())
                 .UsePipeline<Cnielts_V2.CnieltsPipeline3>(new FileDownloadOptions()
                 {
-                    DownloadDirectory = @"~/CnieltsV2Spider/",
+                    DownloadDirectory = @"~/CnieltsV2Spider/2017-12-10/",
                     Downloader = new HttpDownloader()
                 })
                 .UseMultiThread(3)
-                .SetLogFactory(new NLoggerFactory())
                 .UseParallelMode()
                 .UseNamed("CnieltsV2Spider");
             return CrawlerBuilder.Current.Builder();
@@ -99,7 +97,6 @@ namespace Crawler.Simple
                         Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("UrlFinderPipeline")
                 })
                 .UseMultiThread(10)
-                .SetLogFactory(new NLoggerFactory())
                 //.UseBloomFilter(int.MaxValue, 0.001F)
                 .UseRedisBloomFilter()
                 .UseNamed("UrlFinderPipeline");
@@ -113,17 +110,15 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearPipelines();
             CrawlerBuilder.Current.ClearSites();
             CrawlerBuilder.Current
-                .AddSite("http://cuiqingcai.com/")
+                .AddSite("https://www.yezismile.com")
                 .UsePipeline<Yezismile.YezismileUrlFinderPipeline>(new UrlFinderOptons()
                 {
                     WaitForComplete = 10000,
-                    UrlValidator = url => url.Contains("cuiqingcai.com"),
+                    UrlValidator = url => url.Contains("yezismile.com"),
                     Sleep = 500
                 })
-                .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Cuiqingcai/"))
-                .UseMultiThread(5)
-                .SetLogFactory(new NLoggerFactory())
-                .UseBloomFilter(int.MaxValue, 0.001F)
+                .UsePipeline<FileDownloadPipeline>(new FileDownloadOptions("~/Yezismile/HtmlSources/"))
+                .UseMultiThread(8)
                 .UseNamed("CrawlerFullSite");
             return CrawlerBuilder.Current.Builder();
         }
@@ -161,8 +156,7 @@ namespace Crawler.Simple
                     WaitForComplete = waitForComplete,
                     Cookie = cookie
                 })
-                .SetLogFactory(new NLoggerFactory())
-                .UseBloomFilter(int.MaxValue, 0.001F)
+                .UseBloomFilter(int.MaxValue / 21, 0.001F)
                 .UseMultiThread(5)
                 .UseParallelMode();
 
@@ -202,8 +196,7 @@ namespace Crawler.Simple
                     WaitForComplete = waitForComplete,
                     Cookie = cookie
                 })
-                .SetLogFactory(new NLoggerFactory())
-                .UseMultiThread(5)
+                .UseMultiThread(1)
                 .UseRedisBloomFilter()
                 .UseParallelMode();
 
