@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Crawler")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("这是一个轻量级、快速、多线程、多管道、灵活配置的网络爬虫。")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Crawler")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright ©  2017 kun.zhao")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
