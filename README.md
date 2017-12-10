@@ -1,5 +1,8 @@
 # Web Crawler
-[![NuGet](https://img.shields.io/nuget/v/WebCrawler.Core.svg)]()   
+[![1.1]][1.2]   
+
+[1.1]: https://img.shields.io/nuget/v/WebCrawler.Core.svg?style=flat
+[1.2]: https://www.nuget.org/packages/WebCrawler.Core
 
 这是一个轻量级、快速、多线程、多管道、灵活配置的网络爬虫。
 ### 架构设计
