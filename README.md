@@ -1,4 +1,6 @@
 # Web Crawler
+[![NuGet](https://img.shields.io/nuget/v/WebCrawler.Core.svg)]()   
+
 这是一个轻量级、快速、多线程、多管道、灵活配置的网络爬虫。
 ### 架构设计
 WebCrawler 采用的是一个多管道、多调度器的设计与处理模型，任何事情通过管道处理，默认提供了一些常用的管道，开发者可自由扩展管道，组装成一个强大的爬虫。
