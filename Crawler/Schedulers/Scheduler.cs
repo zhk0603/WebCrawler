@@ -77,12 +77,23 @@ namespace Crawler.Schedulers
 
         public virtual void Push(T requestSite)
         {
-            if (UrlFilterManager.Current == null || !UrlFilterManager.Current.Contains(requestSite.ToString()))
+            if (UrlFilterManager.Current != null)
             {
-                _stack.Add(requestSite);
-                UrlFilterManager.Current?.Add(requestSite.ToString());
-                _totalCount++;
+                var identity = requestSite.ToString();
+                if (requestSite is IIdentity requestIdentity)
+                {
+                    identity = requestIdentity.Name;
+                }
+
+                if (UrlFilterManager.Current.Contains(identity))
+                {
+                    return;
+                }
+
+                UrlFilterManager.Current.Add(identity);
             }
+            _stack.Add(requestSite);
+            _totalCount++;
         }
 
         ~Scheduler()

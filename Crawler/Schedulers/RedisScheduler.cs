@@ -84,12 +84,28 @@ namespace Crawler.Schedulers
 
         public virtual void Push(T requestSite)
         {
-            if (UrlFilterManager.Current == null || !UrlFilterManager.Current.Contains(_redisSchedulerKey + requestSite))
+            if (UrlFilterManager.Current != null)
             {
-                _database.ListLeftPush(_redisSchedulerKey, Serialize(requestSite));
-                UrlFilterManager.Current?.Add(_redisSchedulerKey + requestSite);
-                _totalCount++;
+                var identity = _redisSchedulerKey;
+                if (requestSite is IIdentity requestIdentity)
+                {
+                    identity += requestIdentity.Name;
+                }
+                else
+                {
+                    identity += requestSite.ToString();
+                }
+
+                if (UrlFilterManager.Current.Contains(identity))
+                {
+                    return;
+                }
+
+                UrlFilterManager.Current.Add(identity);
             }
+
+            _database.ListLeftPush(_redisSchedulerKey, Serialize(requestSite));
+            _totalCount++;
         }
 
         public long Count => _database.ListLength(_redisSchedulerKey);

@@ -13,7 +13,7 @@ namespace Crawler
     ///     Http请求参考类
     /// </summary>
     [Serializable]
-    public class Site
+    public class Site : IIdentity
     {
         public Site()
         {
@@ -179,9 +179,6 @@ namespace Crawler
         /// </summary>
         public Encoding PostEncoding { get; set; }
 
-        public override string ToString()
-        {
-            return Url;
-        }
+        public string Name => Url;
     }
 }

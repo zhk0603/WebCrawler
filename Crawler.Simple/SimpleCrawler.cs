@@ -169,7 +169,7 @@ namespace Crawler.Simple
             CrawlerBuilder.Current.ClearSites();
 
             var cookie =
-                "UM_distinctid=15fd7aea40f104-0faa19baa1a89f-5b4a2c1d-100200-15fd7aea41033f; .AspNetCore.Antiforgery.b8-pDmTq1XM=CfDJ8BMYgQprmCpNu7uffp6PrYZwkiQVIRV01gbQ3QP3NxpfdtbDHl3XmzrhkMZhV3zyBp-XUMpusUAxoYOCgLe4XfxSUEaZwLMpuF9csFQxzRBPDI1mfroDhWa1PommGwyADOtywoNVehoqgZHAlCgGd6Q; __utma=226521935.940203622.1510883896.1511340298.1511400020.2;.CNBlogsCookie=21F214BA965AD78A4B0668129C6D0F61DC03622B866C6F582007CB680D65ABB3B5C9B2C5135AF06CCEC079D674E6F77112E69D258F3E49159F5A62C270A934F737B34F6C1BE88F2A94D2D8483835482A2D69BDA3D8C7865D3C1F31C9456DFA87ABF84792; .Cnblogs.AspNetCore.Cookies=CfDJ8BMYgQprmCpNu7uffp6PrYZl07eg1xkLN9aBbgKGLXJez8caqpvgeam7-VtYQzrAWXnrYOIgzuBTZsorAdQPSh6MmR2ymUNdLOIHtui9cmIClnj3h4bgVHksFeKCtw25aezLtHCSsdn994FToPdBphzu0HiHTdPODta7IqtCghP6yUHpzIdqphHAL0Uovhj0BACtOY2TNYUSE-mJIE0t2MMSiXDvtkpoRTTndl8Z-G0tHd2Uq9AWkIWsi534ByWwUnYZpYo490crqL00myP6pdA_xYQ_wqwc3nrG8LaVcGYdzCtY_RcnpLRL7T_ompunYQ;";
+                ".CNBlogsCookie=BFE40C6CB5A313065FB04E41881EEB8CC982F0878CDB4408E274E1457F2DB633F593B274F4ED6C95BE79F682613997DACF4E2A87249B3300BEAB18539659614921192B14BA47A32D58E971F489222EAC50CE62E9; .Cnblogs.AspNetCore.Cookies=CfDJ8N7AeFYNSk1Put6Iydpme2ZQ94Ef2Y--c-UzsxyWDAzfo-WG4rbFZnX5GUasyI3_zQKx6lv63yEl8zWoNQN_ZzVuvuOOxOC-Ju1Ju9r5EzOn0ZLxBWOTpvAw3AtX_PrME32ZOxXdaiIkxsaE6AJgqvytPpamSCBmsMdu73aYksi0GmuFpisb-ItFS1uW0t4RvJMqcFt6kI1HOvnM1JuN6FMGAz9Ptk_lFO9NL3Cup7Jbf7w1OKz3WAONnS2NAIPMbr_aUiMgIND-z7mA1_N1LBPqEMotF7waZwWGuQiB97si;";
             var waitForComplete = 60 * 60 * 1000;
             var sleep = 300;
             var connStr = "server=.;database=t_cnblogs;user=sa;password=123@Abc;";
@@ -196,7 +196,7 @@ namespace Crawler.Simple
                     WaitForComplete = waitForComplete,
                     Cookie = cookie
                 })
-                .UseMultiThread(1)
+                .UseMultiThread(5)
                 .UseRedisBloomFilter()
                 .UseParallelMode();
 
