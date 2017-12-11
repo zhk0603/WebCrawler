@@ -32,7 +32,8 @@ namespace Crawler.Simple
 
             public SaveUserInfoPipeline(CnBlogsOptions options) : base(options)
             {
-                Options.Scheduler = Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("CnBlogs");
+                Options.Scheduler =
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("CnBlogs");
                 _followFansScheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<string>>("followFansScheduler");
 
@@ -182,7 +183,7 @@ namespace Crawler.Simple
 
             void SaveToDb(UserInfo userInfo)
             {
-                var sql = @"INSERT INTO t_cnblogs.dbo.[UserInfo_2017-11-28]
+                var sql = @"INSERT INTO t_cnblogs.dbo.[UserInfo]
  (
      UserId,
      NickName,
@@ -283,12 +284,14 @@ namespace Crawler.Simple
         public class AnalysisFollowPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _requestItemScheduler;
+
             public AnalysisFollowPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler =
                     Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<string>>("followFansScheduler");
                 _requestItemScheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<RequestItem>>("requestItemScheduler");
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<RequestItem>>(
+                        "requestItemScheduler");
             }
 
             protected override Task<bool> ExecuteAsync(PipelineContext context)
@@ -360,11 +363,14 @@ namespace Crawler.Simple
         public class CrawlerUserPipeline : CrawlerPipeline<CnBlogsOptions>
         {
             private readonly Schedulers.IScheduler _cnBlogsScheduler;
+
             public CrawlerUserPipeline(CnBlogsOptions options) : base(options)
             {
                 Options.Scheduler =
-                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<RequestItem>>("requestItemScheduler");
-                _cnBlogsScheduler = Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("CnBlogs");
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<RequestItem>>(
+                        "requestItemScheduler");
+                _cnBlogsScheduler =
+                    Schedulers.SchedulerManager.GetScheduler<Schedulers.RedisScheduler<Site>>("CnBlogs");
             }
 
             protected override Task<bool> ExecuteAsync(PipelineContext context)
@@ -433,11 +439,6 @@ namespace Crawler.Simple
             public int FollowerCount { get; set; } // 粉丝数量
             public string AvatarUrl { get; set; } // 头像地址
 
-            // 重写tostring ，BloomFilter 会调用此方法判断是否已经添加过。
-            public override string ToString()
-            {
-                return "export_" + UserId;
-            }
         }
 
         public class UsersObj
@@ -456,17 +457,13 @@ namespace Crawler.Simple
         }
 
         [Serializable]
-        public class RequestItem
+        public class RequestItem : IIdentity
         {
             public Guid UserId { get; set; }
             public bool IsFollowes { get; set; }
             public int Page { get; set; }
 
-            // 重写tostring 返回 当前对象的唯一标志。
-            public override string ToString()
-            {
-                return UserId.ToString("N") + "_" + Page + "_" + IsFollowes;
-            }
+            public string Name => UserId.ToString("N") + "_" + Page + "_" + IsFollowes;
         }
     }
 }
