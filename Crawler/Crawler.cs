@@ -16,6 +16,7 @@ namespace Crawler
         private DateTime _beginTime;
         private DateTime _endTime;
         private IEnumerable<IPipeline> _pipelines;
+        private IEnumerable<IPipeline> _pipelinesList;
         private int _threadNum;
         private string _named;
         private PipelineRunMode _runMode;
@@ -136,10 +137,7 @@ namespace Crawler
             CrawlerState = CrawlerState.Running;
             _beginTime = DateTime.Now;
 
-            _pipelineStatusTimer = new Timer(x =>
-            {
-                Reporter.ReportStatus();
-            }, null, 0, Reporter.ReportStatusInterval);
+            _pipelineStatusTimer = new Timer(x => { Reporter.ReportStatus(); }, null, 0, Reporter.ReportStatusInterval);
 
             while (CrawlerState == CrawlerState.Running || CrawlerState == CrawlerState.Stopped)
             {
@@ -156,7 +154,7 @@ namespace Crawler
                 {
                     while (CrawlerState == CrawlerState.Running)
                     {
-                        if (Pipelines.All(x => x.IsComplete))
+                        if (PipelineList.All(x => x.IsComplete))
                         {
                             CrawlerState = CrawlerState.Finished;
                             break;
@@ -202,6 +200,29 @@ namespace Crawler
         public Task RunAsync()
         {
             return Task.Factory.StartNew(Run);
+        }
+
+        public IEnumerable<IPipeline> PipelineList => _pipelinesList ?? (_pipelinesList = GetPipelines());
+
+        private IEnumerable<IPipeline> GetPipelines()
+        {
+            var res = new List<IPipeline>();
+            foreach (var item in Pipelines)
+            {
+                res.Add(item);
+                LoopAddPipelines(res, item.Next);
+            }
+
+            return res;
+        }
+
+        private void LoopAddPipelines(List<IPipeline> res, IPipeline itemNext)
+        {
+            if (itemNext != null)
+            {
+                res.Add(itemNext);
+                LoopAddPipelines(res, itemNext.Next);
+            }
         }
 
         private bool CheckState(CrawlerState state)
