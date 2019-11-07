@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using HtmlAgilityPack;
 
 namespace WebCrawler.Abstractions.Http
 {

@@ -1,6 +1,6 @@
 ﻿using WebCrawler.Abstractions.Http;
 
-namespace WebCrawler.Abstractions.Downloader
+namespace WebCrawler.Downloader
 {
     public interface IDownloader
     {

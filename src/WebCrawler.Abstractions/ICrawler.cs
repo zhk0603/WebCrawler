@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebCrawler.Abstractions
+namespace WebCrawler
 {
     public interface ICrawler
     {
