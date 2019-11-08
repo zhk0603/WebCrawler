@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WebCrawler.Abstractions;
 
@@ -18,6 +19,11 @@ namespace WebCrawler.Core
             throw new NotImplementedException();
         }
 
+        public Task ExitAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Pause()
         {
             throw new NotImplementedException();
@@ -28,7 +34,7 @@ namespace WebCrawler.Core
             throw new NotImplementedException();
         }
 
-        public Task RunAsync()
+        public Task RunAsync(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

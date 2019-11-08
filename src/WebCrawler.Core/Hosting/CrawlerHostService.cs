@@ -7,14 +7,24 @@ namespace WebCrawler.Core.Hosting
 {
     public class CrawlerHostService : IHostedService
     {
-        public Task StartAsync(CancellationToken cancellationToken)
+        private readonly ICrawlerBuilder _builder;
+        private ICrawler _crawler;
+
+        public CrawlerHostService(ICrawlerBuilder builder)
         {
-            throw new NotImplementedException();
+            _builder = builder;
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            _crawler = _builder.Build();
+
+            await _crawler.RunAsync(cancellationToken);
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await _crawler.ExitAsync(cancellationToken);
         }
     }
 }

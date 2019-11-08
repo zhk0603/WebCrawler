@@ -1,12 +1,27 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using WebCrawler.Core.Hosting;
 
 namespace WebCrawler.Simple
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var host = Host.CreateDefaultBuilder(args)
+                .ConfigureCrawler(configure =>
+                {
+                    configure.ConfigureServices(services =>
+                    {
+                        //services.add
+                    });
+
+                    configure.ConfigureUrl("");
+                })
+                .Build();
+
+            await host.RunAsync();
         }
     }
 }

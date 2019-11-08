@@ -10,7 +10,10 @@ namespace WebCrawler.Core.Hosting
         {
             var crawlerBuilder = new CrawlerBuilder(builder);
             configure(crawlerBuilder);
-            builder.ConfigureServices((context, services) => services.AddHostedService<CrawlerHostService>());
+            builder.ConfigureServices((context, services) =>
+            {
+                services.AddHostedService<CrawlerHostService>();
+            });
             return builder;
         }
     }

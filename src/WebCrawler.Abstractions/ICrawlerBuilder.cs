@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace WebCrawler
@@ -13,12 +14,7 @@ namespace WebCrawler
         /// <returns></returns>
         ICrawler Build();
 
-        /// <summary>
-        ///     配置请求url.
-        /// </summary>
-        /// <param name="urls"></param>
-        /// <returns></returns>
-        ICrawlerBuilder ConfigureUrl(params string[] urls);
+        ICrawlerBuilder ConfigureAppConfiguration(Action<CrawlerBuilderContext, IConfigurationBuilder> configureDelegate);
 
         /// <summary>
         ///     添加服务到容器。
@@ -26,6 +22,15 @@ namespace WebCrawler
         /// <param name="configureDelegate"></param>
         /// <returns></returns>
         ICrawlerBuilder ConfigureServices(Action<IServiceCollection> configureDelegate);
+
+        ICrawlerBuilder ConfigureServices(Action<CrawlerBuilderContext, IServiceCollection> configureServices);
+        
+        /// <summary>
+        ///     配置请求url.
+        /// </summary>
+        /// <param name="urls"></param>
+        /// <returns></returns>
+        ICrawlerBuilder ConfigureUrl(params string[] urls);
 
         ICrawlerBuilder Configure(Action<IServiceCollection> configureDelegate);
     }
