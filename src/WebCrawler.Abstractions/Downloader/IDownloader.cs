@@ -4,6 +4,6 @@ namespace WebCrawler.Downloader
 {
     public interface IDownloader
     {
-        CrawlerResponse Download(CrawlerRequest request);
+        Response Download(Request request);
     }
 }

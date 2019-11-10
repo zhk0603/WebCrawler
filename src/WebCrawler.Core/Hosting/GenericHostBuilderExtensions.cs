@@ -6,9 +6,9 @@ namespace WebCrawler.Core.Hosting
 {
     public static class GenericHostBuilderExtensions
     {
-        public static IHostBuilder ConfigureCrawler(this IHostBuilder builder, Action<ICrawlerBuilder> configure)
+        public static IHostBuilder ConfigureCrawler(this IHostBuilder builder, Action<CrawlerConfigure> configure)
         {
-            var crawlerBuilder = new CrawlerBuilder(builder);
+            var crawlerBuilder = new CrawlerConfigure(builder);
             configure(crawlerBuilder);
             builder.ConfigureServices((context, services) =>
             {
